@@ -1,17 +1,4 @@
-{% extends 'bootstrap_responsive.html' %}
-
-{%- block style %}
-    {{super()}}
-    <style>
-        body {
-            padding: 1em 0;
-        }
-        div.hero-unit img {
-            float: left;
-            margin-right: 10px;
-        }
-    </style>
-{%- endblock %}
+{% extends 'base.html' %}
 
 {%- block body_content %}
     <div class="navbar navbar-fixed-top"><div class="navbar-inner"><div class="container">
@@ -41,5 +28,10 @@
                 Learn more
             </a>
         </p>
+    </div>
+
+    <div class="btn-group group-main container">
+        <a class="btn btn-primary btn-huge">I need a space</a>
+        <a class="btn btn-primary btn-huge">I have a space</a>
     </div>
 {%- endblock %}
