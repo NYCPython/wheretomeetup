@@ -32,18 +32,16 @@ div.hero-unit img {
   float: left;
   margin-right: 10px;
 }
-.btn-huge {
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
-  font: 300%/4em 'Kaushan Script', cursive;
-}
 .btn-group.group-main {
   text-align: center;
 }
 .btn-group.group-main .btn {
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
   display: inline-block;
   float: none;
+  font: 300%/4em 'Kaushan Script', cursive;
   margin: 0 5px;
   width: 30%;
 }
