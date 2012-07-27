@@ -1,37 +1,45 @@
 {% extends 'base.html' %}
 
 {%- block body_content %}
-    <div class="navbar navbar-fixed-top"><div class="navbar-inner"><div class="container">
-        <div class="btn-group pull-right">
-            <a class="btn btn-primary">
-                <i class="icon-user icon-white"></i>
-                Guest
-            </a>
-            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li><a>Log in</a></li>
-                <li><a>Register</a></li>
-            </ul>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="btn-group pull-right">
+                    <a class="btn btn-success">
+                        <i class="icon-user icon-white"></i>
+                        Guest
+                    </a>
+                    <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a>Log in</a></li>
+                        <li><a>Register</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div></div></div>
-
-    <div class="hero-unit">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" width="96" height="140" alt="logo">
-        <h1>NYC Tech Meetups</h1>
-        <p>
-            For groups in need of space and spaces in need of groups
-        </p>
-        <p>
-            <a class="btn btn-primary btn-large">
-                Learn more
-            </a>
-        </p>
     </div>
 
-    <div class="btn-group group-main container">
-        <a class="btn btn-primary btn-huge">I need a space</a>
-        <a class="btn btn-primary btn-huge">I have a space</a>
+    <div class="hero-unit">
+        <div class="container">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" width="96" height="140" alt="logo">
+            <h1>NYC Tech Meetups</h1>
+            <p>
+                For groups in need of spaces and spaces in need of groups
+            </p>
+            <p>
+                <a class="btn btn-inverse btn-large">
+                    Learn more
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="btn-group group-main">
+            <a class="btn btn-primary btn-huge">I need a space</a>
+            <a class="btn btn-primary btn-huge">I have a space</a>
+        </div>
     </div>
 {%- endblock %}

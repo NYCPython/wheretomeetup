@@ -1,0 +1,49 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  padding: 1em 0;
+}
+div.hero-unit img {
+  float: left;
+  margin-right: 10px;
+}
+.btn-huge {
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+  font: 300%/4em 'Kaushan Script', cursive;
+}
+.btn-group.group-main {
+  text-align: center;
+}
+.btn-group.group-main .btn {
+  display: inline-block;
+  float: none;
+  margin: 0 5px;
+  width: 30%;
+}
