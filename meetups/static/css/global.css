@@ -36,12 +36,17 @@ div.hero-unit img {
   text-align: center;
 }
 .btn-group.group-main .btn {
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  color: #ddd;
   display: inline-block;
   float: none;
-  font: 270%/3em 'Kaushan Script', cursive;
+  font: 250%/2.5em 'Kaushan Script', cursive;
   margin: 0 2%;
   padding: 1% 5%;
+}
+.btn-group.group-main .btn strong {
+  color: #fff;
+  font-weight: normal;
 }
