@@ -9,3 +9,33 @@
     <link href="//fonts.googleapis.com/css?family=Trochut|Play|Kaushan+Script|Bree+Serif" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
 {% endblock -%}
+
+{%- block body_content %}
+    {% block header %}
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-success">
+                            <i class="icon-user icon-white"></i>
+                            Guest
+                        </a>
+                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a>Log in</a></li>
+                            <li><a>Register</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+{%- endblock %}
