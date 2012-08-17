@@ -7,6 +7,7 @@ from .forms import LoginForm
 
 @app.route('/')
 def index():
+
     return render_template('index.html')
 
 
@@ -40,6 +41,11 @@ def login_meetup_return(oauth_response):
         oauth_response['oauth_token_secret']
     )
     session['meetup_member_id'] = oauth_response['member_id']
+
+    response = meetup.get('/2/member/%s' % session['meetup_member_id'])
+    session['user_name'] = response.data['name']
+    session['locale'] = response.data['lang']
+    session['latlong'] = (response.data['lat'], response.data['lon'])
 
     flash('You are now signed in!')
     return redirect(next_url)
