@@ -33,7 +33,7 @@ def login_meetup():
 def login_meetup_return(oauth_response):
     next_url = url_for('index')
     if oauth_response is None:
-        flash(u'You denied the request to sign in.')
+        flash(u'You denied the request to sign in.', 'info')
         return redirect(next_url)
 
     session['meetup_token'] = (
@@ -47,7 +47,7 @@ def login_meetup_return(oauth_response):
     session['locale'] = response.data['lang']
     session['latlong'] = (response.data['lat'], response.data['lon'])
 
-    flash('You are now signed in!')
+    flash('You are now signed in!', 'success')
     return redirect(next_url)
 
 @app.route('/logout/')
