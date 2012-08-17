@@ -7,7 +7,6 @@ from .forms import LoginForm
 
 @app.route('/')
 def index():
-
     return render_template('index.html')
 
 
