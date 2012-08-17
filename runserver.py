@@ -1,5 +1,7 @@
-import os
-DEBUG = os.getenv('DEBUG') == 'True'
+from meetups import app as application
 
-from meetups import app
-app.run(debug=DEBUG)
+if __name__ == '__main__':
+    application.run(
+        debug=True,
+        use_reloader=True,
+    )
