@@ -3,6 +3,7 @@
 {%- block content %}
     <div class="hero-unit">
         <div class="container">
+            <p><a href="{{ url_for('login_meetup') }}">Log in with your Meetup.com account</a></p>
             <form method="post" action="{{ url_for('login') }}">
                 <fieldset>
                     <div class="input text">

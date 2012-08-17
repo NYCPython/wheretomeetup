@@ -10,3 +10,4 @@ Werkzeug==0.8.3
 blinker==1.2
 pymongo==2.2.1
 wsgiref==0.1.2
+Flask-OAuth==0.11

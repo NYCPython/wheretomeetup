@@ -18,7 +18,7 @@
                     <div class="btn-group pull-right">
                         <a class="btn btn-success">
                             <i class="icon-user icon-white"></i>
-                            Guest
+                            {{ session.get('user_name', 'Guest') }}
                         </a>
                         <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
