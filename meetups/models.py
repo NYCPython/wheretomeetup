@@ -3,9 +3,16 @@ from datetime import datetime
 from flask import session
 from flask.ext.login import LoginManager, UserMixin, AnonymousUser
 
-from meetups import meetup, mongo
+from meetups import app, meetup, mongo
 
 login_manager = LoginManager()
+
+
+# Indexes
+@app.before_first_request
+def ensure_indexes():
+    mongo.db[Venue.collection].ensure_index([('loc', '2d')])
+
 
 @login_manager.user_loader
 def load_user(id):
