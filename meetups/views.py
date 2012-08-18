@@ -175,7 +175,7 @@ def venue_claim(_id):
     form = VenueClaimForm(request.form, obj=user)
     if request.method == 'POST' and form.validate():
         venue.claim(name=form.name.data, email=form.email.data,
-            phone=form.phone.data)
+            phone=form.phone.data, user_id=user._id)
         flash('Thank you for claiming %s' % venue.name, 'success')
         return redirect(url_for('index'))
 
