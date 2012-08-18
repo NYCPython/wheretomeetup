@@ -171,7 +171,7 @@ def venue_claim(_id):
 
 
 @meetup.tokengetter
-def get_twitter_token():
+def get_meetup_token():
     return session.get('meetup_token')
 
 
