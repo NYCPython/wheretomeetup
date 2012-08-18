@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{%- block content %}
+    <div class="hero-unit">
+        <div class="container">
+            <h1>My Spaces</h1>
+        </div>
+    </div>
+    <div class="container well">
+        <ul class="venues">
+            {% for venue in venues %}
+                <li>
+                    <h3>{{ venue }}</h3>
+                    {% for tag in venue.taglist %}
+                        <span class="label">{{ tag }}</span>
+                    {% endfor %}
+
+                    <address>
+                        {{ venue.address_1 }}
+                        {{ venue.address_2 }}
+                        {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
+                    </address>
+
+                    <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Edit this space</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{%- endblock %}

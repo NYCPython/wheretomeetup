@@ -2,9 +2,9 @@ from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
-from .logic import sync_user, get_unclaimed_venues
-from .models import User, Group, Venue, Event, login_manager
 from .forms import VenueClaimForm, RequestForSpaceForm
+from .logic import sync_user, get_unclaimed_venues, get_users_venues
+from .models import User, Group, Venue, Event, login_manager
 
 
 @app.route('/clear/')
@@ -83,6 +83,7 @@ def need_event(group_id):
         events=events,
     )
 
+
 @app.route('/need/group/<int:group_id>/event/<int:event_id>/')
 @login_required
 def need_venue(group_id, event_id):
@@ -104,6 +105,7 @@ def need_venue(group_id, event_id):
         event=event,
         all_venues=all_venues,
     )
+
 
 @app.route('/need/group/<int:group_id>/event/<int:event_id>/request/', methods=('POST',))
 @login_required
@@ -172,9 +174,18 @@ def venue_claim(_id):
         venue.claim(name=form.name.data, email=form.email.data,
             phone=form.phone.data, user_id=user._id)
         flash('Thank you for claiming %s' % venue.name, 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('venues_for_user'))
 
     return render_template('venue/claim.html', venue=venue, form=form)
+
+
+@app.route('/account/spaces/')
+def venues_for_user():
+    user = User(_id=int(session['member_id']))
+    user.load()
+
+    venues = get_users_venues(user_id=user._id)
+    return render_template('account/venues.html', venues=venues)
 
 
 @meetup.tokengetter

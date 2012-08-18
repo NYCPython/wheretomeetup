@@ -6,6 +6,11 @@ from .models import *
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
+def get_users_venues(user_id):
+    venues = mongo.db[Venue.collection].find({'user_id': user_id}).sort('name')
+    return [Venue(**v) for v in venues]
+
+
 def get_unclaimed_venues():
     """Fetch a list of all venues that have yet to be claimed.
 
