@@ -16,3 +16,10 @@ the root of this repository named ``secrets.cfg``, with the contents::
     MEETUP_OAUTH_CONSUMER_KEY = 'your-meetup-application-key'
     MEETUP_OAUTH_CONSUMER_SECRET = 'your-meetup-application-secret'
 
+
+===============
+Geospatial data
+===============
+
+All geospatial data should be stored as an array formatted
+`[longitude, latitude]`. A 2d index should be created on the field.
