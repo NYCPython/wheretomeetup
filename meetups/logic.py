@@ -12,7 +12,7 @@ def get_unclaimed_venues():
     Returns a list of :class:~meetups.models.Venue` objects.
     """
     venues = mongo.db[Venue.collection].find(
-        {'claimed': {'$ne': 1}}).sort('name')
+        {'claimed': False}).sort('name')
     return [Venue(**v) for v in venues]
 
 
