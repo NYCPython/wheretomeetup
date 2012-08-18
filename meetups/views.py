@@ -5,6 +5,12 @@ from flask.ext.login import login_required, login_user, logout_user
 from .models import User
 
 
+@app.route('/clear/')
+def clear():
+    session.clear()
+    return redirect('/')
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
