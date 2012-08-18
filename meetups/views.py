@@ -2,7 +2,7 @@ from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
-from .forms import VenueClaimForm, RequestForSpaceForm
+from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm
 from .logic import sync_user, get_unclaimed_venues, get_users_venues
 from .models import User, Group, Venue, Event, login_manager
 
@@ -48,7 +48,7 @@ def login_meetup_return(oauth_response):
 def login_sync():
     user = sync_user(session['member_id'])
     login_user(user, remember=True)
-    return redirect(url_for('index'))
+    return redirect(url_for('user_profile'))
 
 
 @app.route('/logout/')
@@ -156,6 +156,21 @@ def need_request(group_id, event_id):
 def need_request_submit(group_id, event_id):
     print "SEND AN EMAIL!"
     return 'SEND AN EMAIL!'
+
+
+@app.route('/account/', methods=('GET', 'POST'))
+@login_required
+def user_profile():
+    user = User(_id=int(session['member_id']))
+    user.load()
+
+    form = UserProfileForm(request.form, obj=user)
+    if request.method == 'POST' and form.validate():
+        user.update_profile(email=form.email.data, phone=form.phone.data)
+        flash('Your profile has been updated', 'success')
+        return redirect(url_for('user_profile'))
+
+    return render_template('account/profile.html', user=user, form=form)
 
 
 @app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))

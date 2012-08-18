@@ -130,6 +130,11 @@ class User(Model, UserMixin):
         """
         return self._id
 
+    def update_profile(self, email, phone):
+        mongo.db[self.collection].update({'_id': self._id},
+            {'$set': {'email': email, 'phone': phone}})
+        self.load()
+
 
 class Group(Model):
     api_endpoint = '/2/groups/?group_id=%(_id)s'

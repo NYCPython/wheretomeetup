@@ -1,6 +1,13 @@
 from wtforms import Form, TextField, TextAreaField, BooleanField, HiddenField, validators
 
 
+class UserProfileForm(Form):
+    _id = HiddenField()
+
+    email = TextField('Email', [validators.Email()])
+    phone = TextField('Phone')
+
+
 class VenueClaimForm(Form):
     _id = HiddenField()
 
@@ -11,6 +18,7 @@ class VenueClaimForm(Form):
 
     confirm = BooleanField('I hereby certify that this space belongs to me',
         [validators.Required()])
+
 
 class RequestForSpaceForm(Form):
     name = TextField('Your Name', [validators.Required()])
