@@ -90,6 +90,10 @@ div.hero-unit img {
   margin-left: 0;
   padding-left: 0;
 }
+.need textarea {
+  width: 99%;
+  min-height: 15em;
+}
 ul.venues {
   list-style: none;
 }

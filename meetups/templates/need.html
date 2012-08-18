@@ -1,3 +1,5 @@
+{% from 'helpers/forms.html' import render_field -%}
+
 {% extends 'base.html' %}
 
 {%- block content %}
@@ -72,7 +74,16 @@
         <div class="row show-grid{% if picked_venues %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>4. Get in touch with hosts!</h3>
-                Put a form here!
+
+                <form action="{{ url_for('need_request_submit', group_id=group._id, event_id=event._id) }}" method="post" class="well form-horizontal">
+                    {{ render_field(request_form.name) }}
+                    {{ render_field(request_form.email) }}
+                    {{ render_field(request_form.phone) }}
+
+                    {{ render_field(request_form.body) }}
+
+                    <button type="submit" class="btn btn-primary">Claim</button>
+                </form>
             </div>
         </div>
     </div>

@@ -4,6 +4,7 @@ from flask.ext.login import login_required, login_user, logout_user
 
 from .logic import sync_user, get_unclaimed_venues
 from .models import User, Group, Venue, Event, login_manager
+from .forms import VenueClaimForm, RequestForSpaceForm
 
 
 @app.route('/clear/')
@@ -136,6 +137,8 @@ def need_request(group_id, event_id):
             picked_venues.append(venue)
     picked_venue_names = [v.name for v in picked_venues]
 
+    request_form = RequestForSpaceForm()
+
     return render_template('need.html',
         user=user,
         group=group,
@@ -143,7 +146,16 @@ def need_request(group_id, event_id):
         all_venues=all_venues,
         picked_venues=picked_venues,
         picked_venue_names=picked_venue_names,
+        request_form=request_form,
     )
+
+
+@app.route('/need/group/<int:group_id>/event/<int:event_id>/request/submit/', methods=('POST',))
+@login_required
+def need_request_submit(group_id, event_id):
+    print "SEND AN EMAIL!"
+    return 'SEND AN EMAIL!'
+
 
 @app.route('/venue/<int:_id>/claim/', methods=('GET', 'POST'))
 def venue_claim(_id):

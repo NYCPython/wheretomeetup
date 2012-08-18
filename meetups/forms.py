@@ -1,4 +1,4 @@
-from wtforms import Form, TextField, BooleanField, HiddenField, validators
+from wtforms import Form, TextField, TextAreaField, BooleanField, HiddenField, validators
 
 
 class VenueClaimForm(Form):
@@ -11,3 +11,11 @@ class VenueClaimForm(Form):
 
     confirm = BooleanField('I hereby certify that this venue belongs to me',
         [validators.Required()])
+
+class RequestForSpaceForm(Form):
+    name = TextField('Your Name', [validators.Required()])
+    email = TextField('Your Email',
+        [validators.Required(), validators.Email()])
+    phone = TextField('Your Phone', [validators.Required()])
+
+    body = TextAreaField('Message to Hosts', [validators.Required()])
