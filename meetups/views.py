@@ -24,9 +24,13 @@ def have():
     return render_template('have.html', venues=venues)
 
 
-@app.route('/login/', methods=('GET', 'POST'))
-def login():
-    return meetup.authorize(callback=url_for('login_meetup_return'))
+@app.route('/login/')
+@app.route('/login/<string:service>/', methods=('GET', 'POST'))
+def login(service=''):
+    if service:
+        return meetup.authorize(callback=url_for('login_meetup_return'))
+    else:
+        return render_template('redirect_to_meetup.html')
 
 
 @app.route('/login/meetup/return/', methods=('GET',))

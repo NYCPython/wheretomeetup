@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{%- block meta %}
+    {{ super() }}
+    <meta http-equiv="refresh" content="5; url={{ url_for('login', service='meetup') }}">
+{%- endblock %}
+
+{%- block content %}
+    <div class="row" style="margin-top:10em">
+        <div class="span6 offset3 container hero-unit">
+            <p>You will now be redirected to Meetup.com...</p>
+        </div>
+    </div>
+{%- endblock %}
