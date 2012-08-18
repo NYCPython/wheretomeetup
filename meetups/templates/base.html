@@ -18,14 +18,17 @@
                     <div class="btn-group pull-right">
                         <a class="btn btn-success">
                             <i class="icon-user icon-white"></i>
-                            {{ session.get('user_name', 'Guest') }}
+                            {{ current_user.user_name }}
                         </a>
                         <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            {% if current_user.is_anonymous() %}
                             <li><a href="{{ url_for('login') }}">Log in</a></li>
-                            <li><a href="{{ url_for('register') }}">Register</a></li>
+                            {% else %}
+                            <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
