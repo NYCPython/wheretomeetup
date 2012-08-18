@@ -41,8 +41,13 @@ div.hero-unit img {
 }
 
 .need {
-  * { opacity: 0.7; }
-  .active { opacity: 1.0; }
+  > * {
+    color: #aaa;
+    i[class*="icon"] { opacity: 0.5; }
+  }
+  > .active * {
+    color: black;
+  }
 
   .show-grid {
     margin-top: 10px;
