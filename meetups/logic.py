@@ -6,6 +6,16 @@ from .models import *
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
+def get_unclaimed_venues():
+    """Fetch a list of all venues that have yet to be claimed.
+
+    Returns a list of :class:~meetups.models.Venue` objects.
+    """
+    venues = mongo.db[Venue.collection].find(
+        {'claimed': False}).sort('name')
+    return [Venue(**v) for v in venues]
+
+
 def sync_user(member_id, maximum_staleness=3600):
     """Synchronize a user between the Meetup API and MongoDB. Typically called
     after a user login. In addition to creating or updating the `user` document,
@@ -67,6 +77,12 @@ def sync_user(member_id, maximum_staleness=3600):
         if not bool(meta['next']):
             break
         query['offset'] += 1
+
+    # Set defaults on any newly created venues
+    mongo.db[Venue.collection].update({'claimed': {'$exists': False}},
+        {'$set': {'claimed': False}}, multi=True)
+    mongo.db[Venue.collection].update({'deleted': {'$exists': False}},
+        {'$set': {'deleted': False}}, multi=True)
 
     more_venues = []
     all_upcoming = 'upcoming,proposed,suggested'

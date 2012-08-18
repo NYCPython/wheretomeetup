@@ -148,6 +148,18 @@ class Venue(Model):
     collection = 'venues'
     dont_save_fields = ['distance']
 
+    def __unicode__(self):
+        return self.name
+
+    def claim(self, name, email, phone):
+        mongo.db[self.collection].update({'_id': self._id},
+            {'$set': {'claimed': True, 'contact': {
+                'name': name,
+                'email': email,
+                'phone': phone,
+            }}})
+        self.load()
+
 
 class Event(Model):
     field_mapping = {'id': '_id'}

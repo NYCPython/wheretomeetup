@@ -28,6 +28,9 @@
 body {
   padding: 0;
 }
+label {
+  cursor: pointer;
+}
 div.hero-unit img {
   float: left;
   margin-right: 10px;
@@ -86,4 +89,13 @@ div.hero-unit img {
   list-style-type: none;
   margin-left: 0;
   padding-left: 0;
+}
+ul.venues {
+  list-style: none;
+}
+ul.venues h3 {
+  display: inline;
+}
+ul.venues li {
+  margin-bottom: 1em;
 }
