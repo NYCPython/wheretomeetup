@@ -30,19 +30,19 @@ def login():
 @app.route('/login/meetup/return/', methods=('GET',))
 @meetup.authorized_handler
 def login_meetup_return(oauth_response):
-    next_url = url_for('index')
-
     session['meetup_token'] = (
         oauth_response['oauth_token'],
         oauth_response['oauth_token_secret']
     )
     session['member_id'] = oauth_response['member_id']
+    return render_template('login.html')
 
-    user = sync_user(oauth_response['member_id'])
+
+@app.route('/login/sync/', methods=('GET',))
+def login_sync():
+    user = sync_user(session['member_id'])
     login_user(user, remember=True)
-
-    flash('You are now signed in!', 'success')
-    return redirect(next_url)
+    return redirect(url_for('index'))
 
 
 @app.route('/logout/')
