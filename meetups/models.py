@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import session
 from flask.ext.login import LoginManager, UserMixin, AnonymousUser
 
@@ -67,6 +69,18 @@ class Model(object):
             k = self.field_mapping.get(k, k)
             setattr(self, k, v)
 
+    def refresh_if_needed(self, maximum_staleness):
+        """Check the :attr:`modified` timestamp, and call :meth:`refresh` if
+        it is older than the `maximum_staleness` (in seconds). Return ``True``
+        if :meth:`refresh` was called, and ``False`` otherwise.
+        """
+        created = getattr(self, 'created', datetime(1970, 1, 1, 0, 0, 0))
+        staleness = datetime.utcnow() - created
+        if staleness.total_seconds() > maximum_staleness:
+            self.refresh()
+            return True
+        return False
+
     def save(self):
         if not hasattr(self, '_id'):
             raise TypeError('Model subclasses must define an _id attribute')
@@ -80,6 +94,11 @@ class Model(object):
             if k in self.dont_save_fields:
                 continue
             doc[k] = v
+
+        now = datetime.utcnow()
+        if 'created' not in doc:
+            doc['created'] = now
+        doc['modified'] = now
 
         mongo.db[self.collection].update({'_id': doc['_id']}, doc, upsert=True)
 
@@ -96,7 +115,6 @@ class User(Model, UserMixin):
         """Make this model compatible with expectations of Flask-Login.
         """
         return self._id
-
 
 class Guest(AnonymousUser):
     # define name to be compatible with :class:`User`

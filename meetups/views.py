@@ -35,8 +35,9 @@ def login_meetup_return(oauth_response):
     session['member_id'] = oauth_response['member_id']
 
     user = User(_id=oauth_response['member_id'])
-    user.refresh()
-    user.save()
+    user.load()
+    if user.refresh_if_needed(3600):
+        user.save()
     login_user(user, remember=True)
 
     flash('You are now signed in!', 'success')
