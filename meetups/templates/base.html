@@ -1,7 +1,7 @@
 {% extends 'bootstrap_responsive.html' %}
 
 {%- block title -%}
-    {% if title %}{{ title }} - {% endif %}NYC Tech Meetups
+    {% if title %}{{ title }} - {% endif %}Where to Meetup
 {%- endblock -%}
 
 {%- block style %}
@@ -15,6 +15,13 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
+                    <a href="{{ url_for('index') }}" class="brand">Where to Meetup</a>
+                    <div class="nav-collapse">
+                        <ul class="nav">
+                            <li><a href="{{ url_for('need') }}">Need</a></li>
+                            <li><a href="{{ url_for('have') }}">Have</a></li>
+                        </ul>
+                    </div>
                     <div class="btn-group pull-right">
                         <a class="btn btn-success">
                             <i class="icon-user icon-white"></i>
@@ -25,9 +32,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             {% if current_user.is_anonymous() %}
-                            <li><a href="{{ url_for('login') }}">Log in</a></li>
+                                <li><a href="{{ url_for('login') }}">Log in</a></li>
                             {% else %}
-                            <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                                <li><a href="{{ url_for('venues_for_user') }}">My spaces</a></li>
+                                <li><a href="{{ url_for('logout') }}">Log out</a></li>
                             {% endif %}
                         </ul>
                     </div>

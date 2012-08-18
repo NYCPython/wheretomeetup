@@ -9,7 +9,7 @@ class VenueClaimForm(Form):
         [validators.Required(), validators.Email()])
     phone = TextField('Contact Phone', [validators.Required()])
 
-    confirm = BooleanField('I hereby certify that this venue belongs to me',
+    confirm = BooleanField('I hereby certify that this space belongs to me',
         [validators.Required()])
 
 class RequestForSpaceForm(Form):
