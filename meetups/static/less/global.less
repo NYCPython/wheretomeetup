@@ -1,7 +1,7 @@
 @import 'bootstrap/mixins';
 
 body {
-    padding: 1em 0;
+    padding: 0;
 }
 
 div.hero-unit img {
@@ -30,4 +30,46 @@ div.hero-unit img {
 
 #messages {
   margin-top: 3.4em;
+}
+
+.navbar-fixed-top {
+  position: static;
+}
+
+.need .show-grid [class*="span"] {
+  background-color: #eee;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 0.25em 1em;
+}
+
+.need .show-grid {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.need .show-grid [class*="span"] h3 i[class*="icon"] {
+  margin-top: 0.25em;
+  margin-right: 0.5em;
+}
+
+.need * {
+  opacity: 0.7;
+}
+
+.need .active * {
+  opacity: 1.0;
+}
+
+.need li input[type="checkbox"] {
+  position: relative;
+  top: -0.2em;
+  margin-right: 0.5em;
+}
+
+.need ul {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
 }

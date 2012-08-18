@@ -18,6 +18,9 @@ def sync_user(member_id, maximum_staleness=3600):
     user = User(_id=member_id)
     user.load()
     user.refresh_if_needed(maximum_staleness)
+    user.loc = (user.lon, user.lat)
+    delattr(user, 'lon')
+    delattr(user, 'lat')
 
     member_of = []
     organizer_of = []
@@ -45,8 +48,9 @@ def sync_user(member_id, maximum_staleness=3600):
     user.organizer_of = organizer_of
     user.save()
 
-    query = dict(group_id=','.join(str(x) for x in member_of), fields='taglist',
-        page=200, offset=0)
+    seen_venues = set()
+    group_ids = ','.join(str(x) for x in member_of)
+    query = dict(group_id=group_ids, fields='taglist', page=200, offset=0)
     while True:
         response = meetup.get('/2/venues/?%s' % urlencode(query),
             headers={'Accept-Charset': 'utf-8'})
@@ -54,6 +58,7 @@ def sync_user(member_id, maximum_staleness=3600):
 
         for venue in results:
             venue_id = venue.pop('id')
+            seen_venues.add(venue_id)
 
             location = venue.pop('lon'), venue.pop('lat')
 
@@ -62,5 +67,35 @@ def sync_user(member_id, maximum_staleness=3600):
         if not bool(meta['next']):
             break
         query['offset'] += 1
+
+    more_venues = []
+    all_upcoming = 'upcoming,proposed,suggested'
+    query = dict(group_id=group_ids, status=all_upcoming, page=200, offset=0)
+    while True:
+        response = meetup.get('/2/events/?%s' % urlencode(query),
+            headers={'Accept-Charset': 'utf-8'})
+        meta, results = response.data['meta'], response.data['results']
+
+        for event in results:
+            event_id = int(event.pop('id'))
+
+            venue = event.pop('venue', None)
+            if venue:
+                venue_id = venue.pop('id')
+                if venue_id not in seen_venues:
+                    more_venues.append(venue_id)
+
+            group = event.pop('group')
+            event['group_id'] = group.pop('id')
+
+            Event(_id=event_id, **event).save()
+
+        if not bool(meta['next']):
+            break
+        query['offset'] += 1
+
+    # TODO:
+    # for venue in more_venues:
+    #     get_venue()
 
     return user

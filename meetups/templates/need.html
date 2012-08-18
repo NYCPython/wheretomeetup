@@ -1,4 +1,82 @@
 {% extends 'base.html' %}
 
 {%- block content %}
+    <div class="need">
+        <div class="row show-grid{% if groups %} active{% endif %}">
+            <div class="span6 offset3 container">
+                <h3>
+                    {% if groups %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
+                    Which group do you need space for?
+                </h3>
+                {% if groups %}
+                <ul>
+                    {% for group in groups %}
+                    <li><a href="{{ url_for('need_event', group_id=group._id) }}">{{ group.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>{{ group.name }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row show-grid{% if events %} active{% endif %}">
+            <div class="span6 offset3 container">
+                <h3>
+                    {% if events %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
+                    Which event do you need space for?
+                </h3>
+                {% if events %}
+                <ul>
+                    {% for event in events %}
+                    <li><a href="{{ url_for('need_venue', group_id=group._id, event_id=event._id) }}">{{ event.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                {% if event %}
+                <p>{{ event.name }}</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row show-grid{% if all_venues and not picked_venues %} active{% endif %}">
+            <div class="span6 offset3 container">
+                <h3>
+                    {% if all_venues and not picked_venues %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
+                    Which venues are you interested in?
+                </h3>
+                {% if all_venues and not picked_venues %}
+                <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}">
+                {% endif %}
+                {% if all_venues and not picked_venues %}
+                <ul>
+                    {% for venue in all_venues %}
+                    <li><label for="{{ venue._id }}">
+                        <input type="checkbox" name="venue_id" value="{{ venue._id }}" id="{{ venue._id }}" /> {{ venue.name }}
+                    </label></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                {% if picked_venues %}
+                {{ picked_venue_names|join(', ') }}
+                {% endif %}
+                {% endif %}
+                {% if all_venues and not picked_venues %}
+                <input class="btn btn-primary" type="submit"/>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row show-grid{% if picked_venues %} active{% endif %}">
+            <div class="span6 offset3 container">
+                <h3>
+                    {% if not picked_venues %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
+                    Get in touch with hosts!
+                </h3>
+                Put a form here!
+            </div>
+        </div>
+    </div>
 {%- endblock %}

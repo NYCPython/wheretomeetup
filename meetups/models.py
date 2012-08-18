@@ -147,3 +147,9 @@ class Venue(Model):
     field_mapping = {'id': '_id'}
     collection = 'venues'
     dont_save_fields = ['distance']
+
+
+class Event(Model):
+    field_mapping = {'id': '_id'}
+    collection = 'events'
+    dont_save_fields = []
