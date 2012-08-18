@@ -155,6 +155,7 @@ def need_request_submit(group_id, event_id):
 
 
 @app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))
+@login_required
 def venue_claim(_id):
     venue = Venue(_id=_id)
     venue.load()
@@ -180,6 +181,7 @@ def venue_claim(_id):
 
 
 @app.route('/account/spaces/')
+@login_required
 def venues_for_user():
     user = User(_id=int(session['member_id']))
     user.load()
