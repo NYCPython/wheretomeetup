@@ -134,7 +134,7 @@ def need_request(group_id, event_id):
             picked_venues.append(venue)
     picked_venue_names = [v.name for v in picked_venues]
 
-    request_form = RequestForSpaceForm()
+    request_form = RequestForSpaceForm(obj=user)
 
     return render_template('need.html',
         user=user,
