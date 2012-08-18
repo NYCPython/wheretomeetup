@@ -63,4 +63,10 @@ def sync_user(member_id, maximum_staleness=3600):
             break
         query['offset'] += 1
 
+    # Set defaults on any newly created venues
+    mongo.db[Venue.collection].update({'claimed': {'$exists': False}},
+        {'$set': {'claimed': False}}, multi=True)
+    mongo.db[Venue.collection].update({'deleted': {'$exists': False}},
+        {'$set': {'deleted': False}}, multi=True)
+
     return user
