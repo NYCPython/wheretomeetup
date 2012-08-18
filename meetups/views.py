@@ -152,7 +152,7 @@ def need_request_submit(group_id, event_id):
     return 'SEND AN EMAIL!'
 
 
-@app.route('/venue/<int:_id>/claim/', methods=('GET', 'POST'))
+@app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))
 def venue_claim(_id):
     venue = Venue(_id=_id)
     venue.load()
