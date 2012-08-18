@@ -1,4 +1,4 @@
-from . import app, meetup
+from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
@@ -32,12 +32,11 @@ def login_meetup_return(oauth_response):
         oauth_response['oauth_token'],
         oauth_response['oauth_token_secret']
     )
-    session['meetup_member_id'] = oauth_response['member_id']
+    session['member_id'] = oauth_response['member_id']
 
-    member_data = meetup.get('/2/member/%s' % session['meetup_member_id']).data
-    session['user_name'] = member_data['name']
-
-    user = User(session['meetup_member_id'], session['user_name'])
+    user = User(_id=oauth_response['member_id'])
+    user.refresh()
+    user.save()
     login_user(user, remember=True)
 
     flash('You are now signed in!')

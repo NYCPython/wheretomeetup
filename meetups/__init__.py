@@ -1,7 +1,7 @@
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.oauth import OAuth
-from .models import login_manager
+from flask.ext.pymongo import PyMongo
 
 app = Flask(__name__)
 app.secret_key = 'Bn1dcC2QDWXgtj'
@@ -13,7 +13,6 @@ except IOError:
     pass
 
 Bootstrap(app)
-login_manager.setup_app(app)
 
 oauth = OAuth()
 meetup = oauth.remote_app('meetup',
@@ -24,5 +23,10 @@ meetup = oauth.remote_app('meetup',
     consumer_key=app.config.get('MEETUP_OAUTH_CONSUMER_KEY', ''),
     consumer_secret=app.config.get('MEETUP_OAUTH_CONSUMER_SECRET', ''),
 )
+
+mongo = PyMongo(app)
+
+from .models import login_manager
+login_manager.setup_app(app)
 
 from . import views
