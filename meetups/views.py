@@ -2,6 +2,7 @@ from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
+from .logic import sync_user
 from .models import User
 
 
@@ -40,10 +41,7 @@ def login_meetup_return(oauth_response):
     )
     session['member_id'] = oauth_response['member_id']
 
-    user = User(_id=oauth_response['member_id'])
-    user.load()
-    if user.refresh_if_needed(3600):
-        user.save()
+    user = sync_user(oauth_response['member_id'])
     login_user(user, remember=True)
 
     flash('You are now signed in!', 'success')

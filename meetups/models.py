@@ -117,6 +117,16 @@ class User(Model, UserMixin):
         """
         return self._id
 
+
+class Group(Model):
+    api_endpoint = '/2/groups/?group_id=%(_id)s'
+    api_identifier = '_id'
+    field_mapping = {
+        'id': '_id'
+    }
+    collection = 'groups'
+
+
 class Guest(AnonymousUser):
     # define name to be compatible with :class:`User`
     name = 'Guest'
