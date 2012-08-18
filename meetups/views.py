@@ -55,11 +55,6 @@ def logout():
     return redirect(url_for('.index'))
 
 
-@app.route('/have/')
-def have():
-    return render_template('have.html')
-
-
 @app.route('/need/')
 @login_required
 def need():
