@@ -48,7 +48,6 @@ def login_meetup_return(oauth_response):
 def logout():
     session.pop('meetup_token', None)
     session.pop('meetup_member_id', None)
-    session.pop('user_name', None)
     logout_user()
     return redirect(url_for('.index'))
 
