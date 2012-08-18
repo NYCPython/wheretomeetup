@@ -147,3 +147,6 @@ class Venue(Model):
     field_mapping = {'id': '_id'}
     collection = 'venues'
     dont_save_fields = ['distance']
+
+    def __unicode__(self):
+        return self.name
