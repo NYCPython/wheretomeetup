@@ -31,9 +31,6 @@ def login():
 @meetup.authorized_handler
 def login_meetup_return(oauth_response):
     next_url = url_for('index')
-    if oauth_response is None:
-        flash(u'You denied the request to sign in.', 'info')
-        return redirect(next_url)
 
     session['meetup_token'] = (
         oauth_response['oauth_token'],
