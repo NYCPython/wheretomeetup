@@ -100,7 +100,8 @@ class Model(object):
             doc['created'] = now
         doc['modified'] = now
 
-        mongo.db[self.collection].update({'_id': doc['_id']}, {'$set': doc}, upsert=True)
+        _id = doc.pop('_id')
+        mongo.db[self.collection].update({'_id': _id}, {'$set': doc}, upsert=True)
 
 
 class User(Model, UserMixin):
