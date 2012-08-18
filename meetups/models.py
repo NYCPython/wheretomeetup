@@ -14,6 +14,7 @@ def load_user(id):
         return user
     return None
 
+
 class Model(object):
     """Base class for data models. Supports three modes of operation:
 
@@ -40,8 +41,7 @@ class Model(object):
     dont_save_fields = []
 
     def __init__(self, **kwargs):
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
+        self._map_fields(kwargs)
 
     def load(self):
         """Return ``True`` if the document was found, or ``False`` otherwise.
@@ -65,9 +65,7 @@ class Model(object):
 
         url = self.api_endpoint % vars(self)
         data = getattr(meetup.get(url), 'data', {})
-        for k, v in data.iteritems():
-            k = self.field_mapping.get(k, k)
-            setattr(self, k, v)
+        self._map_fields(data)
 
     def refresh_if_needed(self, maximum_staleness):
         """Check the :attr:`modified` timestamp, and call :meth:`refresh` if
@@ -102,6 +100,11 @@ class Model(object):
 
         _id = doc.pop('_id')
         mongo.db[self.collection].update({'_id': _id}, {'$set': doc}, upsert=True)
+
+    def _map_fields(self, fields):
+        for k, v in fields.iteritems():
+            k = self.field_mapping.get(k, k)
+            setattr(self, k, v)
 
 
 class User(Model, UserMixin):
