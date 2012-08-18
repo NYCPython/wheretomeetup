@@ -21,7 +21,7 @@
                         {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
                     </address>
 
-                    <a class="btn btn-primary btn-mini">Claim this space</a>
+                    <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
                 </li>
             {% endfor %}
         </ul>
