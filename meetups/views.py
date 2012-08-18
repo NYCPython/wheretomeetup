@@ -2,7 +2,7 @@ from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
-from .logic import sync_user
+from .logic import sync_user, get_unclaimed_venues
 from .models import User
 
 
@@ -19,7 +19,8 @@ def index():
 
 @app.route('/have/')
 def have():
-    return render_template('have.html')
+    venues = get_unclaimed_venues()
+    return render_template('have.html', venues=venues)
 
 
 @app.route('/login/', methods=('GET', 'POST'))

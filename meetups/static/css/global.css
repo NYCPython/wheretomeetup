@@ -28,6 +28,9 @@
 body {
   padding: 1em 0;
 }
+label {
+  cursor: pointer;
+}
 div.hero-unit img {
   float: left;
   margin-right: 10px;
@@ -52,4 +55,13 @@ div.hero-unit img {
 }
 #messages {
   margin-top: 3.4em;
+}
+ul.venues {
+  list-style: none;
+}
+ul.venues h3 {
+  display: inline;
+}
+ul.venues li {
+  margin-bottom: 1em;
 }
