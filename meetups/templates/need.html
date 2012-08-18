@@ -5,8 +5,8 @@
         <div class="row show-grid{% if groups %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
-                    {% if groups %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
-                    Which group do you need space for?
+                    1. Which group do you need space for?
+                    {% if group %}<i class="icon-ok"></i>{% endif %}
                 </h3>
                 {% if groups %}
                 <ul>
@@ -23,8 +23,8 @@
         <div class="row show-grid{% if events %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
-                    {% if events %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
-                    Which event do you need space for?
+                    2. Which event do you need space for?
+                    {% if event %}<i class="icon-ok"></i>{% endif %}
                 </h3>
                 {% if events %}
                 <ul>
@@ -43,8 +43,8 @@
         <div class="row show-grid{% if all_venues and not picked_venues %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
-                    {% if all_venues and not picked_venues %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
                     Which venues are you interested in?
+                    {% if picked_venues %}<i class="icon-ok"></i>{% endif %}
                 </h3>
                 {% if all_venues and not picked_venues %}
                 <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}">
@@ -63,7 +63,7 @@
                 {% endif %}
                 {% endif %}
                 {% if all_venues and not picked_venues %}
-                <input class="btn btn-primary" type="submit"/>
+                <input class="btn btn-primary" type="submit" value="Next"/>
                 </form>
                 {% endif %}
             </div>
@@ -71,10 +71,7 @@
 
         <div class="row show-grid{% if picked_venues %} active{% endif %}">
             <div class="span6 offset3 container">
-                <h3>
-                    {% if not picked_venues %}<i class="icon-chevron-right"></i>{% else %}<i class="icon-ok"></i>{% endif %}
-                    Get in touch with hosts!
-                </h3>
+                <h3>4. Get in touch with hosts!</h3>
                 Put a form here!
             </div>
         </div>
