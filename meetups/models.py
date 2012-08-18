@@ -122,6 +122,9 @@ class User(Model, UserMixin):
     }
     collection = 'users'
 
+    def __unicode__(self):
+        return self.name
+
     def get_id(self):
         """Make this model compatible with expectations of Flask-Login.
         """
