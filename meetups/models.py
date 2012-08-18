@@ -134,3 +134,9 @@ class Guest(AnonymousUser):
     # define name to be compatible with :class:`User`
     name = 'Guest'
 login_manager.anonymous_user = Guest
+
+
+class Venue(Model):
+    field_mapping = {'id': '_id'}
+    collection = 'venues'
+    dont_save_fields = ['distance']

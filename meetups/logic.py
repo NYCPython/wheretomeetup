@@ -5,6 +5,7 @@ from .models import *
 
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
+
 def sync_user(member_id, maximum_staleness=3600):
     """Synchronize a user between the Meetup API and MongoDB. Typically called
     after a user login. In addition to creating or updating the `user` document,
@@ -43,5 +44,23 @@ def sync_user(member_id, maximum_staleness=3600):
     user.member_of = member_of
     user.organizer_of = organizer_of
     user.save()
+
+    query = dict(group_id=','.join(str(x) for x in member_of), fields='taglist',
+        page=200, offset=0)
+    while True:
+        response = meetup.get('/2/venues/?%s' % urlencode(query),
+            headers={'Accept-Charset': 'utf-8'})
+        meta, results = response.data['meta'], response.data['results']
+
+        for venue in results:
+            venue_id = venue.pop('id')
+
+            location = venue.pop('lon'), venue.pop('lat')
+
+            Venue(_id=venue_id, loc=location, **venue).save()
+
+        if not bool(meta['next']):
+            break
+        query['offset'] += 1
 
     return user
