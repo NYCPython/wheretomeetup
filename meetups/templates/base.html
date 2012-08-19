@@ -18,8 +18,8 @@
                     <a href="{{ url_for('index') }}" class="brand">Where to Meetup</a>
                     <div class="nav-collapse">
                         <ul class="nav">
-                            <li><a href="{{ url_for('need') }}">Need</a></li>
-                            <li><a href="{{ url_for('have') }}">Have</a></li>
+                            <li {%- if request.endpoint == 'need' %} class="active" {%- endif -%} ><a href="{{ url_for('need') }}">Need</a></li>
+                            <li {%- if request.endpoint == 'have' %} class="active" {%- endif -%} ><a href="{{ url_for('have') }}">Have</a></li>
                         </ul>
                     </div>
                     <div class="btn-group pull-right">
