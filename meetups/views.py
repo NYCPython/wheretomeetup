@@ -1,6 +1,4 @@
-from datetime import datetime
-import pytz
-import re
+import sendgrid
 
 from . import app, meetup, mongo
 from flask import render_template, redirect, url_for, request, session, flash
@@ -142,36 +140,7 @@ def need_request(group_id, event_id):
             picked_venues.append(venue)
     picked_venue_names = [v.name for v in picked_venues]
 
-    initial = {
-        'name': user.name,
-        'email': getattr(user, 'email', ''),
-        'phone': getattr(user, 'phone', ''),
-        'body': """Hey there {{host}},
-
-My name is %(user_name)s, and I'm interested in hosting an upcoming event for %(group_name)s at your location, {{venue_name}}. Our event, %(event_name)s on %(event_date)s, and will be about %(event_size)s folks. I hope you can host us!
-
-Thanks,
-- %(user_name)s"""}
-
-    if event.time:
-        # TODO: look up timezone for user based on location
-        timezone = 'America/New_York'
-        event_date = datetime.utcfromtimestamp(event.time / 1000)
-        event_date = pytz.timezone(timezone).localize(event_date)
-        event_date = event_date.strftime('%A %B %d, %Y at %I:%M %p')
-        event_date = re.sub(r'0(\d,)', r'\1', event_date)
-    else:
-        event_date = '(you have not scheduled your event, but hosts will want to know when to expect you)'
-
-    initial['body'] = initial['body'] % {
-        'user_name': user.name,
-        'group_name': group.name,
-        'event_name': event.name,
-        'event_date': event_date,
-        'event_size': getattr(event, 'rsvp_limit', '???'),
-    }
-
-    initial = RequestForSpaceInitial(**initial)
+    initial = RequestForSpaceInitial(user, event, group)
     request_form = RequestForSpaceForm(obj=initial)
 
     return render_template('need.html',
@@ -189,8 +158,51 @@ Thanks,
 @app.route('/need/group/<int:group_id>/event/<int:event_id>/request/submit/', methods=('POST',))
 @login_required
 def need_request_submit(group_id, event_id):
-    print "SEND AN EMAIL!"
-    return 'SEND AN EMAIL!'
+    user = User(_id=int(session['member_id']))
+    user.load()
+    group = Group(_id=group_id)
+    group.load()
+    event = Event(_id=event_id)
+    event.load()
+
+    initial = RequestForSpaceInitial(user, event, group)
+
+    form = RequestForSpaceForm(request.form, obj=initial)
+    if not form.validate():
+        flash(u'There were errors with the form', 'error')
+        return need_request(group_id, event_id)
+
+    venues = [Venue(_id=int(venue_id))
+              for venue_id in request.form.getlist('venue_id')]
+
+    def evaluate_body(venue):
+        body = form.body.data
+        body = body.replace('{{host}}', venue.contact['name'])
+        body = body.replace('{{venue_name}}', venue.name)
+        return body
+
+    s = sendgrid.Sendgrid(
+        username=app.config.get('SENDGRID_USERNAME', ''),
+        password=app.config.get('SENDGRID_PASSWORD', ''),
+        secure=True)
+    for venue in venues:
+        venue.load()
+        print vars(venue)
+        recipient = venue.contact['email']
+        body = evaluate_body(venue)
+        message = sendgrid.Message(
+            addr_from=form.email.data,
+            subject="WhereToMeetup Request for Use of Your Space",
+            text=body)
+        message.add_to(recipient)
+        s.smtp.send(message)
+
+    if len(venues) > 1:
+        flash(u'The hosts have been notified of your request', 'info')
+    else:
+        flash(u'The host has been notified of your request', 'info')
+
+    return redirect(url_for('index'))
 
 
 @app.route('/account/', methods=('GET', 'POST'))

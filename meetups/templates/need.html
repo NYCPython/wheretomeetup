@@ -92,6 +92,9 @@
                 {% endif %}
 
                 <form action="{{ url_for('need_request_submit', group_id=group._id, event_id=event._id) }}" method="post" class="well form-horizontal">
+                    {% for venue in picked_venues %}
+                    <input type="hidden" name="venue_id" value="{{ venue._id }}"/>
+                    {% endfor %}
                     {{ render_field(request_form.name) }}
                     {{ render_field(request_form.email) }}
                     {{ render_field(request_form.phone) }}
