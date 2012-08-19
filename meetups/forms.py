@@ -1,3 +1,4 @@
+from collections import namedtuple
 from wtforms import Form, TextField, TextAreaField, BooleanField, HiddenField, validators
 
 
@@ -27,3 +28,6 @@ class RequestForSpaceForm(Form):
     phone = TextField('Your Phone', [validators.Required()])
 
     body = TextAreaField('Message to Hosts', [validators.Required()])
+
+RequestForSpaceInitial = namedtuple('RequestForSpaceInitial',
+                                    ['name', 'email', 'phone', 'body'])

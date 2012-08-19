@@ -17,7 +17,9 @@
                     {% endfor %}
                 </ul>
                 {% else %}
+                {% if group %}
                 <p>{{ group.name }}</p>
+                {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -49,7 +51,7 @@
                     {% if picked_venues %}<i class="icon-ok"></i>{% endif %}
                 </h3>
                 {% if all_venues and not picked_venues %}
-                <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}">
+                <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}" class="well form-horizontal">
                 {% endif %}
                 {% if all_venues and not picked_venues %}
                 <ul>
@@ -75,15 +77,31 @@
             <div class="span6 offset3 container">
                 <h3>4. Get in touch with hosts!</h3>
 
+                {% if picked_venues %}
+                {% if not event_size_known %}
+                <div class="alert alert-warning" style="margin-top:0.5em">
+                    We couldn't determine the size of your event. Please replace the "???" in the email template
+                    with an estimated size for the host.
+                </div>
+                {% endif %}
+
                 <form action="{{ url_for('need_request_submit', group_id=group._id, event_id=event._id) }}" method="post" class="well form-horizontal">
                     {{ render_field(request_form.name) }}
                     {{ render_field(request_form.email) }}
                     {{ render_field(request_form.phone) }}
 
                     {{ render_field(request_form.body) }}
+                    {% raw %}
+                    <div class="alert alert-info">
+                        The template fields <code>{{host}}</code> and <code>{{venue_name}}</code> will be
+                        replaced with the host's full name, and the selected venue's name, respectively,
+                        when the email is sent.
+                    </div>
+                    {% endraw %}
 
-                    <button type="submit" class="btn btn-primary">Claim</button>
+                    <button type="submit" class="btn btn-primary">Send Email</button>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>

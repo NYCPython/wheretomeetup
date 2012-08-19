@@ -59,13 +59,14 @@ div.hero-unit img {
 .navbar-fixed-top {
   position: static;
 }
-.need > * {
+.need {
   color: #aaa;
 }
-.need > * i[class*="icon"] {
+.need i[class*="icon"] {
   opacity: 0.5;
 }
-.need > .active * {
+.need .active,
+.need code {
   color: black;
 }
 .need .show-grid {

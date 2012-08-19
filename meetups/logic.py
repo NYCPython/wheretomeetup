@@ -91,7 +91,7 @@ def sync_user(member_id, maximum_staleness=3600):
 
     more_venues = []
     all_upcoming = 'upcoming,proposed,suggested'
-    query = dict(group_id=group_ids, status=all_upcoming, page=200, offset=0)
+    query = dict(group_id=group_ids, status=all_upcoming, fields='rsvp_limit', page=200, offset=0)
     while True:
         response = meetup.get('/2/events/?%s' % urlencode(query),
             headers={'Accept-Charset': 'utf-8'})
