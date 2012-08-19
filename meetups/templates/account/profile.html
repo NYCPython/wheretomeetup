@@ -2,6 +2,10 @@
 
 {% extends 'base.html' %}
 
+{%- block title -%}
+    My Profile - {{ super() }}
+{%- endblock -%}
+
 {%- block content %}
     <div class="hero-unit">
         <div class="container">

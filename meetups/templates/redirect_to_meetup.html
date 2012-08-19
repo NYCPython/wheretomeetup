@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{%- block title -%}
+    Redirecting to Meetup.com - {{ super() }}
+{%- endblock -%}
+
 {%- block meta %}
     {{ super() }}
     <meta http-equiv="refresh" content="5; url={{ url_for('login', service='meetup') }}">
