@@ -16,6 +16,15 @@ the root of this repository named ``secrets.cfg``, with the contents::
     MEETUP_OAUTH_CONSUMER_KEY = 'your-meetup-application-key'
     MEETUP_OAUTH_CONSUMER_SECRET = 'your-meetup-application-secret'
 
+To send email, you will need a `free SendGrid account
+<http://sendgrid.com/user/signup>`_. Once you have signed up and your account
+is activated, go to `the credentials management page
+<https://sendgrid.com/credentials>`_, and add a new username and password. Be
+sure to check the "API" and "Mail" (but not "Web") permissions checkboxes. Add
+the username and password to ``secrets.cfg`` like::
+
+    SENDGRID_USERNAME = 'your-new-username'
+    SENDGRID_PASSWORD = 'your-new-password'
 
 ===============
 Geospatial data
