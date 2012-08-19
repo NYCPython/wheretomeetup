@@ -90,7 +90,7 @@ def need_event(group_id):
     )
 
 
-@app.route('/need/group/<int:group_id>/event/<int:event_id>/')
+@app.route('/need/group/<int:group_id>/event/<event_id>/')
 @login_required
 def need_venue(group_id, event_id):
     user = User(_id=int(session['member_id']))
@@ -113,7 +113,7 @@ def need_venue(group_id, event_id):
     )
 
 
-@app.route('/need/group/<int:group_id>/event/<int:event_id>/request/', methods=('POST',))
+@app.route('/need/group/<int:group_id>/event/<event_id>/request/', methods=('POST',))
 @login_required
 def need_request(group_id, event_id):
     venue_ids = request.form.getlist('venue_id', type=int)
@@ -155,7 +155,7 @@ def need_request(group_id, event_id):
     )
 
 
-@app.route('/need/group/<int:group_id>/event/<int:event_id>/request/submit/', methods=('POST',))
+@app.route('/need/group/<int:group_id>/event/<event_id>/request/submit/', methods=('POST',))
 @login_required
 def need_request_submit(group_id, event_id):
     user = User(_id=int(session['member_id']))
