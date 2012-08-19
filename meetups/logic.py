@@ -96,9 +96,9 @@ def sync_user(member_id, maximum_staleness=3600):
         response = meetup.get('/2/events/?%s' % urlencode(query),
             headers={'Accept-Charset': 'utf-8'})
         meta, results = response.data['meta'], response.data['results']
-
+        
         for event in results:
-            event_id = int(event.pop('id'))
+            event_id = event.pop('id')
 
             venue = event.pop('venue', None)
             if venue:

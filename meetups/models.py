@@ -33,7 +33,7 @@ class Model(object):
     and :attr:`api_identifer` class-level attributes with appropriate values.
     Subclasses should have a field (or property)
 
-    Subclasses may override :attr:`dont_save_fields` with a squence of
+    Subclasses may override :attr:`dont_save_fields` with a sequence of
     field names that should not be saved to MongoDB.
 
     Subclasses may override :attr:`field_mapping` which maps field names
