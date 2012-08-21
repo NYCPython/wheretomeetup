@@ -7,6 +7,11 @@ ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
 def get_users_venues(user_id):
+    """Fetch a list of all venues that have been claimed by a
+    :class:`~meetups.models.User`.
+
+    Returns a list of :class:`~meetups.models.Venue` objects.
+    """
     venues = mongo.db[Venue.collection].find({'user_id': user_id}).sort('name')
     return [Venue(**v) for v in venues]
 
