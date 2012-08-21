@@ -73,7 +73,7 @@
                 </ul>
                 {% else %}
                 {% if picked_venues %}
-                {{ picked_venue_names|join(', ') }}
+                {{ picked_venues|join(', ') }}
                 {% endif %}
                 {% endif %}
                 {% if all_venues and not picked_venues %}

@@ -125,7 +125,6 @@ def need_request(group_id, event_id):
     for venue in all_venues:
         if venue._id in venue_ids:
             picked_venues.append(venue)
-    picked_venue_names = [v.name for v in picked_venues]
 
     initial = RequestForSpaceInitial(user, event, group)
     request_form = RequestForSpaceForm(obj=initial)
@@ -136,7 +135,6 @@ def need_request(group_id, event_id):
         event=event,
         all_venues=all_venues,
         picked_venues=picked_venues,
-        picked_venue_names=picked_venue_names,
         request_form=request_form,
         event_size_known=hasattr(event, 'rsvp_limit'),
         event_time_known=hasattr(event, 'time'),
