@@ -64,9 +64,8 @@ def logout():
 @app.route('/need/')
 @login_required
 def need():
-    user = User(_id=int(session['member_id']))
-    user.load()
-    groups = [Group(**doc) for doc in
+    user = User(_id=int(session['member_id'])).load()
+    groups = [Group(**doc).load() for doc in
               mongo.db.groups.find({'_id': {'$in': user.organizer_of}})]
     return render_template('need.html',
         user=user,
@@ -77,10 +76,8 @@ def need():
 @app.route('/need/group/<int:group_id>/')
 @login_required
 def need_event(group_id):
-    user = User(_id=int(session['member_id']))
-    user.load()
-    group = Group(_id=group_id)
-    group.load()
+    user = User(_id=int(session['member_id'])).load()
+    group = Group(_id=group_id).load()
     events = [Event(**doc) for doc in
               mongo.db.events.find({'group_id': group._id})]
     return render_template('need.html',
@@ -93,12 +90,9 @@ def need_event(group_id):
 @app.route('/need/group/<int:group_id>/event/<event_id>/')
 @login_required
 def need_venue(group_id, event_id):
-    user = User(_id=int(session['member_id']))
-    user.load()
-    group = Group(_id=group_id)
-    group.load()
-    event = Event(_id=event_id)
-    event.load()
+    user = User(_id=int(session['member_id'])).load()
+    group = Group(_id=group_id).load()
+    event = Event(_id=event_id).load()
     all_venues = [Venue(**doc) for doc in
                   mongo.db.venues.find({
                       'loc': {'$near': user.loc},
@@ -121,12 +115,9 @@ def need_request(group_id, event_id):
         flash(u'You need to pick at least one venue!', 'warning')
         return redirect('need_venue', group_id=group_id, event_id=event_id)
 
-    user = User(_id=int(session['member_id']))
-    user.load()
-    group = Group(_id=group_id)
-    group.load()
-    event = Event(_id=event_id)
-    event.load()
+    user = User(_id=int(session['member_id'])).load()
+    group = Group(_id=group_id).load()
+    event = Event(_id=event_id).load()
     all_venues = [Venue(**doc) for doc in
                   mongo.db.venues.find({
                       'loc': {'$near': user.loc},
@@ -158,12 +149,9 @@ def need_request(group_id, event_id):
 @app.route('/need/group/<int:group_id>/event/<event_id>/request/submit/', methods=('POST',))
 @login_required
 def need_request_submit(group_id, event_id):
-    user = User(_id=int(session['member_id']))
-    user.load()
-    group = Group(_id=group_id)
-    group.load()
-    event = Event(_id=event_id)
-    event.load()
+    user = User(_id=int(session['member_id'])).load()
+    group = Group(_id=group_id).load()
+    event = Event(_id=event_id).load()
 
     initial = RequestForSpaceInitial(user, event, group)
 
@@ -172,7 +160,7 @@ def need_request_submit(group_id, event_id):
         flash(u'There were errors with the form', 'error')
         return need_request(group_id, event_id)
 
-    venues = [Venue(_id=int(venue_id))
+    venues = [Venue(_id=int(venue_id)).load()
               for venue_id in request.form.getlist('venue_id')]
 
     def evaluate_body(venue):
@@ -186,7 +174,6 @@ def need_request_submit(group_id, event_id):
         password=app.config.get('SENDGRID_PASSWORD', ''),
         secure=True)
     for venue in venues:
-        venue.load()
         print vars(venue)
         recipient = venue.contact['email']
         body = evaluate_body(venue)
@@ -208,8 +195,7 @@ def need_request_submit(group_id, event_id):
 @app.route('/account/', methods=('GET', 'POST'))
 @login_required
 def user_profile():
-    user = User(_id=int(session['member_id']))
-    user.load()
+    user = User(_id=int(session['member_id'])).load()
 
     form = UserProfileForm(request.form, obj=user)
     if request.method == 'POST' and form.validate():
@@ -223,11 +209,9 @@ def user_profile():
 @app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))
 @login_required
 def venue_claim(_id):
-    venue = Venue(_id=_id)
-    venue.load()
+    venue = Venue(_id=_id).load()
 
-    user = User(_id=int(session['member_id']))
-    user.load()
+    user = User(_id=int(session['member_id'])).load()
 
     # If the user has not email or phone number and the venue does, place
     # them on the user for the purpose for prepopulating the form.
@@ -249,8 +233,7 @@ def venue_claim(_id):
 @app.route('/account/spaces/')
 @login_required
 def venues_for_user():
-    user = User(_id=int(session['member_id']))
-    user.load()
+    user = User(_id=int(session['member_id'])).load()
 
     venues = get_users_venues(user_id=user._id)
     return render_template('account/venues.html', venues=venues)

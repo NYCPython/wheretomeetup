@@ -35,8 +35,7 @@ def sync_user(member_id, maximum_staleness=3600):
 
     Returns the populated and saved :class:`~meetups.models.User` object.
     """
-    user = User(_id=member_id)
-    user.load()
+    user = User(_id=member_id).load()
     user.refresh_if_needed(maximum_staleness)
     user.loc = (user.lon, user.lat)
     delattr(user, 'lon')

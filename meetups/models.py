@@ -18,8 +18,8 @@ def ensure_indexes():
 
 @login_manager.user_loader
 def load_user(id):
-    user = User(_id=id)
-    if user.load():
+    user = User(_id=id).load()
+    if getattr(user, '_id') == id:
         return user
     return None
 
@@ -64,7 +64,7 @@ class Model(object):
         for k, v in doc.iteritems():
             setattr(self, k, v)
 
-        return bool(doc)
+        return self
 
     def refresh(self):
         if self.api_endpoint is None:
