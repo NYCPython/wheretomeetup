@@ -170,7 +170,6 @@ def need_request_submit(group_id, event_id):
         password=app.config.get('SENDGRID_PASSWORD', ''),
         secure=True)
     for venue in venues:
-        print vars(venue)
         recipient = venue.contact['email']
         body = evaluate_body(venue)
         message = sendgrid.Message(
