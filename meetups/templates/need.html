@@ -89,9 +89,15 @@
 
                 {% if picked_venues %}
                 {% if not event_size_known %}
-                <div class="alert alert-warning" style="margin-top:0.5em">
-                    We couldn't determine the size of your event. Please replace the "???" in the email template
-                    with an estimated size for the host.
+                <div class="alert alert-error" style="margin-top:0.5em">
+                    <strong>Couldn't determine RSVP limit.</strong> Please replace the "[RSVP limit]" in
+                    the email template with an estimated size for the host.
+                </div>
+                {% endif %}
+                {% if not event_time_known %}
+                <div class="alert alert-error" style="margin-top:0.5em">
+                    <strong>Couldn't determine event date.</strong> Please replace the "[event date]" in
+                    the email template with an estimated date or range of dates for the host.
                 </div>
                 {% endif %}
 
