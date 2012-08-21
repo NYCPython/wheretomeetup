@@ -14,7 +14,7 @@ def get_users_venues(user_id):
 def get_unclaimed_venues():
     """Fetch a list of all venues that have yet to be claimed.
 
-    Returns a list of :class:~meetups.models.Venue` objects.
+    Returns a list of :class:`~meetups.models.Venue` objects.
     """
     venues = mongo.db[Venue.collection].find(
         {'claimed': False}).sort('name')
