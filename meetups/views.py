@@ -1,6 +1,6 @@
 import sendgrid
 
-from . import app, meetup
+from . import app, meetup, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
@@ -165,10 +165,6 @@ def need_request_submit(group_id, event_id):
         body = body.replace('{{venue_name}}', venue.name)
         return body
 
-    s = sendgrid.Sendgrid(
-        username=app.config.get('SENDGRID_USERNAME', ''),
-        password=app.config.get('SENDGRID_PASSWORD', ''),
-        secure=True)
     for venue in venues:
         recipient = venue.contact['email']
         body = evaluate_body(venue)
@@ -177,7 +173,7 @@ def need_request_submit(group_id, event_id):
             subject="WhereToMeetup Request for Use of Your Space",
             text=body)
         message.add_to(recipient)
-        s.smtp.send(message)
+        sendgrid_api.smtp.send(message)
 
     if len(venues) > 1:
         flash(u'The hosts have been notified of your request', 'info')

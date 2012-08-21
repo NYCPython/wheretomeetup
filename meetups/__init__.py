@@ -1,3 +1,4 @@
+import sendgrid
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.oauth import OAuth
@@ -25,6 +26,12 @@ meetup = oauth.remote_app('meetup',
 )
 
 mongo = PyMongo(app)
+
+sendgrid_api = sendgrid.Sendgrid(
+    username=app.config.get('SENDGRID_USERNAME', ''),
+    password=app.config.get('SENDGRID_PASSWORD', ''),
+    secure=True,
+)
 
 from .models import login_manager
 login_manager.setup_app(app)
