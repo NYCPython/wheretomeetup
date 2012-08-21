@@ -12,6 +12,8 @@ login_manager = LoginManager()
 @app.before_first_request
 def ensure_indexes():
     mongo.db[Venue.collection].ensure_index([('loc', '2d')])
+    mongo.db[Venue.collection].ensure_index([('claimed', 1)])
+    mongo.db[Venue.collection].ensure_index([('user_id', 1)])
 
 
 @login_manager.user_loader
