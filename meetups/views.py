@@ -1,11 +1,11 @@
 import sendgrid
 
-from . import app, meetup, mongo
+from . import app, meetup
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
 from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
-from .logic import sync_user, get_unclaimed_venues, get_users_venues
+from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues
 from .models import User, Group, Venue, Event, login_manager
 
 
@@ -65,8 +65,7 @@ def logout():
 @login_required
 def need():
     user = User(_id=int(session['member_id'])).load()
-    groups = [Group(**doc).load() for doc in
-              mongo.db.groups.find({'_id': {'$in': user.organizer_of}})]
+    groups = get_groups({'_id': {'$in': user.organizer_of}})
     return render_template('need.html',
         user=user,
         groups=groups,
@@ -78,8 +77,7 @@ def need():
 def need_event(group_id):
     user = User(_id=int(session['member_id'])).load()
     group = Group(_id=group_id).load()
-    events = [Event(**doc) for doc in
-              mongo.db.events.find({'group_id': group._id})]
+    events = get_events({'group_id': group._id})
     return render_template('need.html',
         user=user,
         group=group,
@@ -93,12 +91,11 @@ def need_venue(group_id, event_id):
     user = User(_id=int(session['member_id'])).load()
     group = Group(_id=group_id).load()
     event = Event(_id=event_id).load()
-    all_venues = [Venue(**doc) for doc in
-                  mongo.db.venues.find({
-                      'loc': {'$near': user.loc},
-                      'claimed': True,
-                      'deleted': False,
-                  })]
+    all_venues = get_venues({
+        'loc': {'$near': user.loc},
+        'claimed': True,
+        'deleted': False,
+    })
     return render_template('need.html',
         user=user,
         group=group,
@@ -118,12 +115,11 @@ def need_request(group_id, event_id):
     user = User(_id=int(session['member_id'])).load()
     group = Group(_id=group_id).load()
     event = Event(_id=event_id).load()
-    all_venues = [Venue(**doc) for doc in
-                  mongo.db.venues.find({
-                      'loc': {'$near': user.loc},
-                      'claimed': True,
-                      'deleted': False,
-                  })]
+    all_venues = get_venues({
+        'loc': {'$near': user.loc},
+        'claimed': True,
+        'deleted': False,
+    })
     picked_venues = []
     venue_ids = set(venue_ids)
     for venue in all_venues:
@@ -160,8 +156,8 @@ def need_request_submit(group_id, event_id):
         flash(u'There were errors with the form', 'error')
         return need_request(group_id, event_id)
 
-    venues = [Venue(_id=int(venue_id)).load()
-              for venue_id in request.form.getlist('venue_id')]
+    venues = get_venues({
+        '_id': {'$in': map(int, request.form.getlist('venue_id'))}})
 
     def evaluate_body(venue):
         body = form.body.data

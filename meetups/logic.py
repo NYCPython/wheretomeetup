@@ -6,14 +6,23 @@ from .models import *
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
+def _get_list(cls, query, sort):
+    """Return a list of instances of `cls` that match the given
+    query.
+    """
+    docs = mongo.db[cls.collection].find(query)
+    if sort:
+        docs.sort(sort)
+    return [cls(**doc) for doc in docs]
+
+
 def get_users_venues(user_id):
     """Fetch a list of all venues that have been claimed by a
     :class:`~meetups.models.User`.
 
     Returns a list of :class:`~meetups.models.Venue` objects.
     """
-    venues = mongo.db[Venue.collection].find({'user_id': user_id}).sort('name')
-    return [Venue(**v) for v in venues]
+    return _get_list(Venue, {'user_id': user_id}, 'name')
 
 
 def get_unclaimed_venues():
@@ -21,9 +30,7 @@ def get_unclaimed_venues():
 
     Returns a list of :class:`~meetups.models.Venue` objects.
     """
-    venues = mongo.db[Venue.collection].find(
-        {'claimed': False}).sort('name')
-    return [Venue(**v) for v in venues]
+    return _get_list(Venue, {'claimed': False}, 'name')
 
 
 def sync_user(member_id, maximum_staleness=3600):
@@ -124,3 +131,24 @@ def sync_user(member_id, maximum_staleness=3600):
     #     get_venue()
 
     return user
+
+
+def get_groups(query, sort=None):
+    """Return a list of :class:`~meetups.models.Group` objects that
+    match the given query.
+    """
+    return _get_list(Group, query, sort)
+
+
+def get_events(query, sort=None):
+    """Return a list of :class:`~meetups.models.Event` objects that
+    match the given query.
+    """
+    return _get_list(Event, query, sort)
+
+
+def get_venues(query, sort=None):
+    """Return a list of :class:`~meetups.models.Venue` objects that
+    match the given query.
+    """
+    return _get_list(Venue, query, sort)
