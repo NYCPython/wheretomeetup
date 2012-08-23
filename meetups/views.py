@@ -106,7 +106,7 @@ def need_venue(group_id, event_id):
 
 @app.route('/need/group/<int:group_id>/event/<event_id>/request/', methods=('POST',))
 @login_required
-def need_request(group_id, event_id):
+def need_request(group_id, event_id, form=None):
     venue_ids = request.form.getlist('venue_id', type=int)
     if not venue_ids:
         flash(u'You need to pick at least one venue!', 'warning')
@@ -127,7 +127,7 @@ def need_request(group_id, event_id):
             picked_venues.append(venue)
 
     initial = RequestForSpaceInitial(user, event, group)
-    request_form = RequestForSpaceForm(obj=initial)
+    request_form = form or RequestForSpaceForm(obj=initial)
 
     return render_template('need.html',
         user=user,
@@ -152,7 +152,7 @@ def need_request_submit(group_id, event_id):
     form = RequestForSpaceForm(request.form, obj=initial)
     if not form.validate():
         flash(u'There were errors with the form', 'error')
-        return need_request(group_id, event_id)
+        return need_request(group_id, event_id, form=form)
 
     venues = get_venues({
         '_id': {'$in': map(int, request.form.getlist('venue_id'))}})
