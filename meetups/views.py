@@ -163,7 +163,7 @@ def need_request_submit(group_id, event_id):
         body = body.replace('{{venue_name}}', venue.name)
         return body
 
-    for venue in venues:
+    for count, venue in enumerate(venues):
         recipient = venue.contact['email']
         body = evaluate_body(venue)
         message = sendgrid.Message(
@@ -173,7 +173,7 @@ def need_request_submit(group_id, event_id):
         message.add_to(recipient)
         sendgrid_api.smtp.send(message)
 
-    if len(venues) > 1:
+    if count > 1:
         flash(u'The hosts have been notified of your request', 'info')
     else:
         flash(u'The host has been notified of your request', 'info')

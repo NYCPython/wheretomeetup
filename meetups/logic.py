@@ -7,13 +7,12 @@ ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
 def _get_list(cls, query, sort):
-    """Return a list of instances of `cls` that match the given
-    query.
+    """Generate instances of `cls` that match the given query.
     """
     docs = mongo.db[cls.collection].find(query)
     if sort:
         docs.sort(sort)
-    return [cls(**doc) for doc in docs]
+    return (cls(**doc) for doc in docs)
 
 
 def get_users_venues(user_id):
