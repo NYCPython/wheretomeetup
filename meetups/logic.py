@@ -121,6 +121,8 @@ def sync_user(member_id, maximum_staleness=3600):
         query['offset'] += 1
 
     # Set defaults on any newly created venues
+    mongo.db[Venue.collection].update({'capacity': {'$exists': False}},
+        {'$set': {'capacity': 0}}, multi=True)
     mongo.db[Venue.collection].update({'claimed': {'$exists': False}},
         {'$set': {'claimed': False}}, multi=True)
     mongo.db[Venue.collection].update({'deleted': {'$exists': False}},
@@ -132,7 +134,7 @@ def sync_user(member_id, maximum_staleness=3600):
     while True:
         response = _meetup_get('/2/events/?%s' % urlencode(query))
         meta, results = response.data['meta'], response.data['results']
-        
+
         for event in results:
             event_id = event.pop('id')
 
