@@ -162,13 +162,18 @@ class Venue(Model):
     def __unicode__(self):
         return self.name
 
-    def claim(self, user_id, name, email, phone):
+    def claim(self, user_id, name, email, phone, capacity):
         mongo.db[self.collection].update({'_id': self._id},
-            {'$set': {'claimed': True, 'user_id': user_id, 'contact': {
-                'name': name,
-                'email': email,
-                'phone': phone,
-            }}})
+            {'$set': {
+                'claimed': True,
+                'user_id': user_id,
+                'capacity': capacity,
+                'contact': {
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            }})
         self.load()
 
 

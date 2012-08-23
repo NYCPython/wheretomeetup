@@ -6,7 +6,8 @@ from . import app, meetup, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import current_user, login_required, login_user, logout_user
 
-from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
+from .forms import (VenueEditForm, VenueClaimForm, RequestForSpaceForm,
+    UserProfileForm, RequestForSpaceInitial)
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
 from .models import User, Group, Venue, Event, login_manager
 
@@ -229,11 +230,36 @@ def venue_claim(_id):
     if not getattr(user, 'phone', None) and getattr(venue, 'phone', None):
         user.phone = venue.phone
 
-    form = VenueClaimForm(request.form, obj=user)
+    # There are different forms for editing and claiming a venue. Use the
+    # right one.
+    if venue.claimed:
+        form_class = VenueEditForm
+    else:
+        form_class = VenueClaimForm
+
+    # Check for current contact information linked to the venue. For any fields
+    # that don't have a value, use the values associated with the user doing
+    # the claiming.
+    if hasattr(venue, 'contact'):
+        venue.contact_name = venue.contact.get('name')
+        venue.contact_email = venue.contact.get('email')
+        venue.contact_phone = venue.contact.get('phone')
+    if not venue.contact_name:
+        venue.contact_name = user.name
+    if not venue.contact_email:
+        venue.contact_email = user.email
+    if not venue.contact_phone:
+        venue.contact_phone = user.phone
+
+    form = form_class(request.form, obj=venue)
     if request.method == 'POST' and form.validate():
-        venue.claim(name=form.name.data, email=form.email.data,
-            phone=form.phone.data, user_id=user._id)
-        flash('Thank you for claiming %s' % venue.name, 'success')
+        venue.claim(name=form.contact_name.data, email=form.contact_email.data,
+            phone=form.contact_phone.data, user_id=user._id,
+            capacity=form.capacity.data)
+
+        flash('Thank you for %s %s' % (
+            'updating' if venue.claimed else 'claiming', venue.name), 'success')
+
         return redirect(url_for('venues_for_user'))
 
     return render_template('venue/claim.html', venue=venue, form=form)

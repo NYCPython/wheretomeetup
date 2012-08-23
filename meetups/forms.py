@@ -1,5 +1,6 @@
 from collections import namedtuple
-from wtforms import Form, TextField, TextAreaField, BooleanField, HiddenField, validators
+from wtforms import (Form, validators, TextField, TextAreaField, BooleanField,
+    IntegerField, HiddenField)
 
 
 class UserProfileForm(Form):
@@ -9,14 +10,19 @@ class UserProfileForm(Form):
     phone = TextField('Phone')
 
 
-class VenueClaimForm(Form):
+class VenueEditForm(Form):
     _id = HiddenField()
 
-    name = TextField('Contact Name', [validators.Required()])
-    email = TextField('Contact Email',
+    contact_name = TextField('Contact Name', [validators.Required()])
+    contact_email = TextField('Contact Email',
         [validators.Required(), validators.Email()])
-    phone = TextField('Contact Phone', [validators.Required()])
+    contact_phone = TextField('Contact Phone', [validators.Required()])
 
+    capacity = IntegerField('Maximum Capacity',
+        [validators.NumberRange(min=0)], default=0)
+
+
+class VenueClaimForm(VenueEditForm):
     confirm = BooleanField('I hereby certify that this space belongs to me',
         [validators.Required()])
 
@@ -35,6 +41,7 @@ import re
 
 _RequestForSpaceInitial = namedtuple('RequestForSpaceInitial',
                                      ['name', 'email', 'phone', 'body'])
+
 
 def RequestForSpaceInitial(user, event, group):
     initial = {

@@ -14,13 +14,23 @@
     </div>
     <div class="container">
         <form action="{{ url_for('venue_claim', _id=venue._id) }}" method="post" class="well form-horizontal">
-            {{ render_field(form.name) }}
-            {{ render_field(form.email) }}
-            {{ render_field(form.phone) }}
+            {{ render_field(form.contact_name) }}
+            {{ render_field(form.contact_email) }}
+            {{ render_field(form.contact_phone) }}
 
-            {{ render_field(form.confirm) }}
+            {{ render_field(form.capacity) }}
 
-            <button type="submit" class="btn btn-primary">Claim</button>
+            {%- if 'confirm' in form -%}
+                {{ render_field(form.confirm) }}
+            {%- endif -%}
+
+            <button type="submit" class="btn btn-primary">
+                {%- if 'confirm' in form -%}
+                    Claim
+                {%- else -%}
+                    Update
+                {%- endif -%}
+            </button>
         </form>
     </div>
 {%- endblock %}
