@@ -73,7 +73,8 @@ class Model(object):
             raise TypeError('Model subclasses must set an api_identifier attribute')
 
         url = self.api_endpoint % vars(self)
-        data = getattr(meetup.get(url), 'data', {})
+        response = meetup.get(url, headers={'Accept-Charset': 'utf-8'})
+        data = getattr(response, 'data', {})
         self._map_fields(data)
 
     def refresh_if_needed(self, maximum_staleness):

@@ -53,6 +53,13 @@ def get_venues(query, sort=None):
     return _get_list(Venue, query, sort)
 
 
+def _meetup_get(endpoint):
+    """Make a GET request to the Meetup API and set common headers
+    and options.
+    """
+    return meetup.get(endpoint, headers={'Accept-Charset': 'utf-8'})
+
+
 def sync_user(member_id, maximum_staleness=3600):
     """Synchronize a user between the Meetup API and MongoDB. Typically called
     after a user login. In addition to creating or updating the `user` document,
@@ -73,7 +80,7 @@ def sync_user(member_id, maximum_staleness=3600):
 
     query = dict(member_id=user._id, fields='self', page=200, offset=0)
     while True:
-        response = meetup.get('/2/groups/?%s' % urlencode(query))
+        response = _meetup_get('/2/groups/?%s' % urlencode(query))
         meta, results = response.data['meta'], response.data['results']
 
         for group in results:
@@ -98,8 +105,7 @@ def sync_user(member_id, maximum_staleness=3600):
     group_ids = ','.join(str(x) for x in member_of)
     query = dict(group_id=group_ids, fields='taglist', page=200, offset=0)
     while True:
-        response = meetup.get('/2/venues/?%s' % urlencode(query),
-            headers={'Accept-Charset': 'utf-8'})
+        response = _meetup_get('/2/venues/?%s' % urlencode(query))
         meta, results = response.data['meta'], response.data['results']
 
         for venue in results:
@@ -124,8 +130,7 @@ def sync_user(member_id, maximum_staleness=3600):
     all_upcoming = 'upcoming,proposed,suggested'
     query = dict(group_id=group_ids, status=all_upcoming, fields='rsvp_limit', page=200, offset=0)
     while True:
-        response = meetup.get('/2/events/?%s' % urlencode(query),
-            headers={'Accept-Charset': 'utf-8'})
+        response = _meetup_get('/2/events/?%s' % urlencode(query))
         meta, results = response.data['meta'], response.data['results']
         
         for event in results:
