@@ -133,7 +133,6 @@ def need_request(group_id, event_id):
         user=user,
         group=group,
         event=event,
-        all_venues=all_venues,
         picked_venues=picked_venues,
         request_form=request_form,
         event_size_known=hasattr(event, 'rsvp_limit'),

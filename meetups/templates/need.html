@@ -14,13 +14,13 @@
     </div>
 
     <div class="need">
-        <div class="row show-grid{% if groups %} active{% endif %}">
+        <div class="row show-grid{% if request.endpoint == 'need' %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
                     1. Which group do you need space for?
                     {% if group %}<i class="icon-ok"></i>{% endif %}
                 </h3>
-                {% if groups %}
+                {% if request.endpoint == 'need' %}
                 <ul>
                     {% for group in groups %}
                     <li><a href="{{ url_for('need_event', group_id=group._id) }}">{{ group.name }}</a></li>
@@ -34,13 +34,13 @@
             </div>
         </div>
 
-        <div class="row show-grid{% if events %} active{% endif %}">
+        <div class="row show-grid{% if request.endpoint == 'need_event' %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
                     2. Which event do you need space for?
                     {% if event %}<i class="icon-ok"></i>{% endif %}
                 </h3>
-                {% if events %}
+                {% if request.endpoint == 'need_event' %}
                 <ul>
                     {% for event in events %}
                     <li><a href="{{ url_for('need_venue', group_id=group._id, event_id=event._id) }}">{{ event.name }}</a></li>
@@ -54,16 +54,16 @@
             </div>
         </div>
 
-        <div class="row show-grid{% if all_venues and not picked_venues %} active{% endif %}">
+        <div class="row show-grid{% if request.endpoint == 'need_venue' %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>
                     3. Which venues are you interested in?
                     {% if picked_venues %}<i class="icon-ok"></i>{% endif %}
                 </h3>
-                {% if all_venues and not picked_venues %}
+                {% if request.endpoint == 'need_venue' %}
                 <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}" class="well form-horizontal">
                 {% endif %}
-                {% if all_venues and not picked_venues %}
+                {% if request.endpoint == 'need_venue' %}
                 <ul>
                     {% for venue in all_venues %}
                     <li><label for="{{ venue._id }}">
@@ -76,18 +76,18 @@
                 {{ picked_venues|join(', ') }}
                 {% endif %}
                 {% endif %}
-                {% if all_venues and not picked_venues %}
+                {% if request.endpoint == 'need_venue' %}
                 <input class="btn btn-primary" type="submit" value="Next"/>
                 </form>
                 {% endif %}
             </div>
         </div>
 
-        <div class="row show-grid{% if picked_venues %} active{% endif %}">
+        <div class="row show-grid{% if request.endpoint in ('need_request', 'need_request_submit') %} active{% endif %}">
             <div class="span6 offset3 container">
                 <h3>4. Get in touch with hosts!</h3>
 
-                {% if picked_venues %}
+                {% if request.endpoint in ('need_request', 'need_request_submit') %}
                 {% if not event_size_known %}
                 <div class="alert alert-error" style="margin-top:0.5em">
                     <strong>Couldn't determine RSVP limit.</strong> Please replace the "[RSVP limit]" in
