@@ -32,6 +32,27 @@ def get_unclaimed_venues():
     return _get_list(Venue, {'claimed': False}, 'name')
 
 
+def get_groups(query, sort=None):
+    """Return a list of :class:`~meetups.models.Group` objects that
+    match the given query.
+    """
+    return _get_list(Group, query, sort)
+
+
+def get_events(query, sort=None):
+    """Return a list of :class:`~meetups.models.Event` objects that
+    match the given query.
+    """
+    return _get_list(Event, query, sort)
+
+
+def get_venues(query, sort=None):
+    """Return a list of :class:`~meetups.models.Venue` objects that
+    match the given query.
+    """
+    return _get_list(Venue, query, sort)
+
+
 def sync_user(member_id, maximum_staleness=3600):
     """Synchronize a user between the Meetup API and MongoDB. Typically called
     after a user login. In addition to creating or updating the `user` document,
@@ -130,24 +151,3 @@ def sync_user(member_id, maximum_staleness=3600):
     #     get_venue()
 
     return user
-
-
-def get_groups(query, sort=None):
-    """Return a list of :class:`~meetups.models.Group` objects that
-    match the given query.
-    """
-    return _get_list(Group, query, sort)
-
-
-def get_events(query, sort=None):
-    """Return a list of :class:`~meetups.models.Event` objects that
-    match the given query.
-    """
-    return _get_list(Event, query, sort)
-
-
-def get_venues(query, sort=None):
-    """Return a list of :class:`~meetups.models.Venue` objects that
-    match the given query.
-    """
-    return _get_list(Venue, query, sort)
