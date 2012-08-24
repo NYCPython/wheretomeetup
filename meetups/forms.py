@@ -19,7 +19,7 @@ class VenueEditForm(Form):
     contact_phone = TextField('Contact Phone', [validators.Required()])
 
     capacity = IntegerField('Maximum Capacity',
-        [validators.NumberRange(min=0)], default=0)
+        [validators.NumberRange(min=0)])
 
 
 class VenueClaimForm(VenueEditForm):
