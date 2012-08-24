@@ -224,6 +224,10 @@ def venue_claim(_id):
         venue.contact_name = venue.contact.get('name')
         venue.contact_email = venue.contact.get('email')
         venue.contact_phone = venue.contact.get('phone')
+    else:
+        venue.contact_name = None
+        venue.contact_email = None
+        venue.contact_phone = None
     if not venue.contact_name:
         venue.contact_name = user.name
     if not venue.contact_email:
