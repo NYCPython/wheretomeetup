@@ -62,23 +62,24 @@
                 </h3>
                 {% if request.endpoint == 'need_venue' %}
                 <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}" class="well form-horizontal">
-                {% endif %}
-                {% if request.endpoint == 'need_venue' %}
                 <ul>
                     {% for venue in all_venues %}
                     <li><label for="{{ venue._id }}">
                         <input type="checkbox" name="venue_id" value="{{ venue._id }}" id="{{ venue._id }}" /> {{ venue.name }}
                     </label></li>
+                    {% else %}
+                    <li>
+                        <div class="alert alert-error" style="margin-top:0.5em">
+                            <strong>No nearby venues found :-(</strong> Unfortunately, no one nearby has
+                            <a href="{{ url_for('have') }}">claimed a venue</a>. Please try again soon.
+                        </div>
+                    </li>
                     {% endfor %}
                 </ul>
-                {% else %}
-                {% if picked_venues %}
-                {{ picked_venues|join(', ') }}
-                {% endif %}
-                {% endif %}
-                {% if request.endpoint == 'need_venue' %}
                 <input class="btn btn-primary" type="submit" value="Next"/>
                 </form>
+                {% else %}
+                {{ picked_venues|join(', ') }}
                 {% endif %}
             </div>
         </div>
