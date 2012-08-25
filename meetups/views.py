@@ -19,12 +19,14 @@ def clear():
 def index():
     return render_template('index.html')
 
-
 @app.route('/have/')
 def have():
     venues = get_unclaimed_venues()
     return render_template('have.html', venues=venues)
-
+    
+@app.route("/about/")
+def about():
+    return render_template('about.html')
 
 @app.route('/login/')
 @app.route('/login/<string:service>/', methods=('GET', 'POST'))
