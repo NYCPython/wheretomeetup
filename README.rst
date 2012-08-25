@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/NYCPython/wheretomeetup.png?branch=develop)](http://travis-ci.org/NYCPython/wheretomeetup)
+
 #######
 Meetups
 #######
