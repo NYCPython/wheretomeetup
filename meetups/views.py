@@ -49,7 +49,7 @@ def login_meetup_return(oauth_response):
 @app.route('/login/sync/', methods=('GET',))
 def login_sync():
     user = sync_user(session['member_id'])
-    login_user(user, remember=True)
+    login_user(user)
     return redirect(url_for('user_profile'))
 
 
