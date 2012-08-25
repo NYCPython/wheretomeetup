@@ -110,7 +110,7 @@ def need_request(group_id, event_id, form=None):
     venue_ids = request.form.getlist('venue_id', type=int)
     if not venue_ids:
         flash(u'You need to pick at least one venue!', 'warning')
-        return redirect('need_venue', group_id=group_id, event_id=event_id)
+        return redirect(url_for('need_venue', group_id=group_id, event_id=event_id))
 
     user = User(_id=int(session['member_id'])).load()
     group = Group(_id=group_id).load()
