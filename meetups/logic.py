@@ -165,6 +165,7 @@ def sync_user(member_id, maximum_staleness=3600):
                 venue_id = venue.get('id')
                 if venue_id not in seen_venues:
                     more_venues.append(venue_id)
+                    seen_venues.add(venue_id)
 
             group = event.pop('group')
             event['group_id'] = group.pop('id')
