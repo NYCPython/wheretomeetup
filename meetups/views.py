@@ -1,8 +1,10 @@
+from functools import wraps
+
 import sendgrid
 
 from . import app, meetup, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import current_user, login_required, login_user, logout_user
 
 from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
@@ -28,6 +30,7 @@ def have():
 
 @app.route('/login/')
 @app.route('/login/<string:service>/', methods=('GET', 'POST'))
+@skip_if_logged_in
 def login(service=''):
     if service:
         return meetup.authorize(callback=url_for('login_meetup_return'))
@@ -37,6 +40,7 @@ def login(service=''):
 
 @app.route('/login/meetup/return/', methods=('GET',))
 @meetup.authorized_handler
+@skip_if_logged_in
 def login_meetup_return(oauth_response):
     session['meetup_token'] = (
         oauth_response['oauth_token'],
@@ -47,6 +51,7 @@ def login_meetup_return(oauth_response):
 
 
 @app.route('/login/sync/', methods=('GET',))
+@skip_if_logged_in
 def login_sync():
     user = sync_user(session['member_id'])
     login_user(user)
@@ -240,3 +245,14 @@ def get_meetup_token():
 def login_prompt():
     session['login_redirect'] = request.path
     return redirect(url_for('login'))
+
+def skip_if_logged_in(func):
+    """Decorator for functions in the login flow that skips to
+    the destination if the user is already logged in.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated():
+            return redirect(url_for('user_profile'))
+        return func(*args, **kwargs)
+    return wrapper
