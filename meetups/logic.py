@@ -160,9 +160,9 @@ def sync_user(member_id, maximum_staleness=3600):
         for event in results:
             event_id = event.pop('id')
 
-            venue = event.pop('venue', None)
+            venue = event.get('venue', None)
             if venue:
-                venue_id = venue.pop('id')
+                venue_id = venue.get('id')
                 if venue_id not in seen_venues:
                     more_venues.append(venue_id)
 
