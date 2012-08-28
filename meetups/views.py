@@ -1,12 +1,26 @@
+from functools import wraps
+
 import sendgrid
 
 from . import app, meetup, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import current_user, login_required, login_user, logout_user
 
 from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
 from .models import User, Group, Venue, Event, login_manager
+
+
+def skip_if_logged_in(func):
+    """Decorator for functions in the login flow that skips to
+    the destination if the user is already logged in.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated():
+            return redirect(url_for('user_profile'))
+        return func(*args, **kwargs)
+    return wrapper
 
 
 @app.route('/clear/')
@@ -28,6 +42,7 @@ def have():
 
 @app.route('/login/')
 @app.route('/login/<string:service>/', methods=('GET', 'POST'))
+@skip_if_logged_in
 def login(service=''):
     if service:
         return meetup.authorize(callback=url_for('login_meetup_return'))
@@ -37,6 +52,7 @@ def login(service=''):
 
 @app.route('/login/meetup/return/', methods=('GET',))
 @meetup.authorized_handler
+@skip_if_logged_in
 def login_meetup_return(oauth_response):
     session['meetup_token'] = (
         oauth_response['oauth_token'],
@@ -47,16 +63,19 @@ def login_meetup_return(oauth_response):
 
 
 @app.route('/login/sync/', methods=('GET',))
+@skip_if_logged_in
 def login_sync():
     user = sync_user(session['member_id'])
     login_user(user)
-    return redirect(url_for('user_profile'))
+    redirect_to = session.pop('login_redirect', url_for('user_profile'))
+    return redirect(redirect_to)
 
 
 @app.route('/logout/')
 def logout():
     session.pop('meetup_token', None)
     session.pop('meetup_member_id', None)
+    session.pop('login_redirect', None)
     logout_user()
     return redirect(url_for('.index'))
 
@@ -236,6 +255,5 @@ def get_meetup_token():
 
 @login_manager.unauthorized_handler
 def login_prompt():
-    # TODO: eventually, prompt the user so they are not surprised
-    # that we are redirecting them to Meetup to log in
+    session['login_redirect'] = request.path
     return redirect(url_for('login'))
