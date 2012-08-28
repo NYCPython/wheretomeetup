@@ -45,7 +45,7 @@
                     {% for event in events %}
                     <li>
                         <a href="{{ url_for('need_venue', group_id=group._id, event_id=event._id) }}">{{ event.name }}</a>
-                        {{ event|event_date }} {{ event|event_venue(prefix='at') }}
+                        {{ event|event_date('%a, %b %d') }} {{ event|event_venue(prefix='at') }}
                     </li>
                     {% endfor %}
                 </ul>
