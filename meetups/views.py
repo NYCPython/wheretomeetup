@@ -219,6 +219,18 @@ def user_profile():
 @app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))
 @login_required
 def venue_claim(_id):
+    def get_contact_field(attr):
+        """Return an attribute for a venue's contact.
+
+        If the venue already has contact information associated with it,
+        the value stored in the document will be used. If not, the contact
+        information from the current user will be used instead.
+        """
+        value = getattr(user, attr, None)
+        if hasattr(venue, 'contact'):
+            value = venue.contact.get(attr, value)
+        return value
+
     venue = Venue(_id=_id).load()
 
     user = User(_id=int(session['member_id'])).load()
@@ -240,26 +252,18 @@ def venue_claim(_id):
     # Check for current contact information linked to the venue. For any fields
     # that don't have a value, use the values associated with the user doing
     # the claiming.
-    if hasattr(venue, 'contact'):
-        venue.contact_name = venue.contact.get('name')
-        venue.contact_email = venue.contact.get('email')
-        venue.contact_phone = venue.contact.get('phone')
-    else:
-        venue.contact_name = None
-        venue.contact_email = None
-        venue.contact_phone = None
-    if not venue.contact_name:
-        venue.contact_name = user.name
-    if not venue.contact_email:
-        venue.contact_email = user.email
-    if not venue.contact_phone:
-        venue.contact_phone = user.phone
+    venue.contact_name = get_contact_field('name')
+    venue.contact_email = get_contact_field('email')
+    venue.contact_phone = get_contact_field('phone')
 
     form = form_class(request.form, obj=venue)
     if request.method == 'POST' and form.validate():
-        venue.claim(name=form.contact_name.data, email=form.contact_email.data,
-            phone=form.contact_phone.data, user_id=user._id,
-            capacity=form.capacity.data)
+        venue.claim(contact_name=form.contact_name.data,
+            contact_email=form.contact_email.data,
+            contact_phone=form.contact_phone.data, user_id=user._id,
+            capacity=form.capacity.data, need_names=form.need_names.data,
+            food=form.food.data, av=form.av.data, chairs=form.chairs.data,
+            instructions=form.instructions.data)
 
         flash('Thank you for %s %s' % (
             'updating' if venue.claimed else 'claiming', venue.name), 'success')

@@ -27,6 +27,14 @@ class VenueEditForm(Form):
     capacity = IntegerField('Maximum Capacity',
         [validators.NumberRange(min=0)])
 
+    # Optional questionnaire fields
+    need_names = BooleanField('A list of names is required ahead of time.')
+    food = BooleanField('Food can be provided.')
+    av = BooleanField('There is a screen and/or projector.')
+    chairs = BooleanField('There is sufficient seating.')
+    instructions = TextAreaField('Special instructions '
+        '(e.g., take a particular evelvator, use a specific door)')
+
 
 class VenueClaimForm(VenueEditForm):
     """Extends the :class:`~meetup.forms.VenueEditForm` to add a confirmation
