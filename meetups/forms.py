@@ -4,6 +4,7 @@ from wtforms import (Form, validators, TextField, TextAreaField, BooleanField,
 
 
 class UserProfileForm(Form):
+    """Edit contact information associated with a user."""
     _id = HiddenField()
 
     email = TextField('Email', [validators.Email()])
@@ -11,6 +12,11 @@ class UserProfileForm(Form):
 
 
 class VenueEditForm(Form):
+    """Edit information associated with a venue.
+
+    The contact information and capacity are required. All of the fields that
+    make up the questionnaire portion of the form, however, are optional.
+    """
     _id = HiddenField()
 
     contact_name = TextField('Contact Name', [validators.Required()])
@@ -23,6 +29,9 @@ class VenueEditForm(Form):
 
 
 class VenueClaimForm(VenueEditForm):
+    """Extends the :class:`~meetup.forms.VenueEditForm` to add a confirmation
+    field.
+    """
     confirm = BooleanField('I hereby certify that this space belongs to me',
         [validators.Required()])
 
