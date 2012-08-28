@@ -4,6 +4,10 @@
     I have a space - {{ super() }}
 {%- endblock -%}
 
+{% macro streetview(lat, lon) %}
+http://maps.googleapis.com/maps/api/streetview?size=200x100&location={{ lat }},%20{{ lon }}&fov=90&heading=235&pitch=10&sensor=false
+{% endmacro %}
+
 {%- block content %}
     <div class="hero-unit">
         <div class="container">
@@ -12,21 +16,25 @@
     </div>
 
     <div class="container">
-        <ul class="venues">
+        <ul class="venues thumbnails">
             {% for venue in venues %}
-                <li>
-                    <h3>{{ venue }}</h3>
-                    {% for tag in venue.taglist %}
-                        <span class="label">{{ tag }}</span>
-                    {% endfor %}
+                <li class="span4">
+                    <article class="thumbnail">
+                        <h3>{{ venue }}</h3>
+                        <img src="{{ venue.images[0] or streetview(venue.loc[0], venue.loc[1]) }}" alt="">
 
-                    <address>
-                        {{ venue.address_1 }}
-                        {{ venue.address_2 }}
-                        {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
-                    </address>
+                        {% for tag in venue.taglist %}
+                            <span class="label">{{ tag }}</span>
+                        {% endfor %}
 
-                    <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
+                        <address>
+                            {{ venue.address_1 }}
+                            {{ venue.address_2 }}
+                            {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
+                        </address>
+
+                        <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
+                    </article>
                 </li>
             {% endfor %}
         </ul>

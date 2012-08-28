@@ -102,8 +102,13 @@ ul.venues {
   list-style: none;
 }
 ul.venues h3 {
+  padding-left: 8px;
   display: inline;
 }
-ul.venues li {
-  margin-bottom: 1em;
+ul.venues article {
+  height: 280px;
+  overflow: hidden;
+}
+ul.venues article img {
+  margin: 20px auto;
 }

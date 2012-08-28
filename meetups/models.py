@@ -159,6 +159,10 @@ class Venue(Model):
     collection = 'venues'
     dont_save_fields = ['distance']
 
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("images", [])
+        super(Venue, self).__init__(*args, **kwargs)
+
     def __unicode__(self):
         return self.name
 
