@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{%- block title -%}
+    Redirecting to Meetup.com - {{ super() }}
+{%- endblock -%}
+
+{%- block meta %}
+    {{ super() }}
+    <meta http-equiv="refresh" content="5; url={{ url_for('login', service='meetup') }}">
+{%- endblock %}
+
+{%- block content %}
+    <div class="row" style="margin-top:10em">
+        <div class="span6 offset3 container hero-unit">
+            <p>
+                You will be redirected to Meetup.com in <span id="countdown">5</span> seconds.
+                <a href="{{ url_for('login', service='meetup') }}">Go there now instead.</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var countDown = function() {
+            var elem = document.getElementById('countdown');
+            var n = parseInt(elem.innerText, 10);
+            if (n > 0) {
+                elem.innerText = n - 1;
+            }
+            else {
+                clearInterval(interval);
+            }
+        };
+
+        var interval = setInterval(countDown, 1000);
+    </script>
+{%- endblock %}

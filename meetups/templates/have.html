@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{%- block title -%}
+    I have a space - {{ super() }}
+{%- endblock -%}
+
+{%- block content %}
+    <div class="hero-unit">
+        <div class="container">
+            <h1>I <em>have</em> a space</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <ul class="venues">
+            {% for venue in venues %}
+                <li>
+                    <h3>{{ venue }}</h3>
+                    {% for tag in venue.taglist %}
+                        <span class="label">{{ tag }}</span>
+                    {% endfor %}
+
+                    <address>
+                        {{ venue.address_1 }}
+                        {{ venue.address_2 }}
+                        {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
+                    </address>
+
+                    <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{%- endblock %}

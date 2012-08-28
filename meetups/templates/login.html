@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{%- block meta %}
+    {{ super() }}
+    <meta http-equiv="refresh" content="0; url={{ url_for('login_sync') }}"/>
+{%- endblock %}
+
+{%- block content %}
+    <div class="row" style="margin-top:10em">
+        <div class="span6 offset3 container hero-unit">
+            <p>Synchronizing your account with Meetup...</p>
+            <div class="progress progress-striped active">
+                <div class="bar" style="width:100%"></div>
+            </div>
+        </div>
+    </div>
+{%- endblock %}

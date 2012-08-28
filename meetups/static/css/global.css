@@ -1,0 +1,109 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  padding: 0;
+}
+label {
+  cursor: pointer;
+}
+div.hero-unit img {
+  float: left;
+  margin-right: 10px;
+}
+.btn-group.group-main {
+  text-align: center;
+}
+.btn-group.group-main .btn {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  color: #ddd;
+  display: inline-block;
+  float: none;
+  font: 250%/2.5em 'Kaushan Script', cursive;
+  margin: 0 2%;
+  padding: 1% 5%;
+}
+.btn-group.group-main .btn strong {
+  color: #fff;
+  font-weight: normal;
+}
+#messages {
+  margin-top: 1.4em;
+}
+.navbar-fixed-top {
+  position: static;
+}
+.need {
+  color: #aaa;
+}
+.need i[class*="icon"] {
+  opacity: 0.5;
+}
+.need .active,
+.need code {
+  color: black;
+}
+.need .show-grid {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.need .show-grid [class*="span"] {
+  background-color: #eee;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 0.25em 1em;
+}
+.need .show-grid [class*="span"] h3 i[class*="icon"] {
+  margin-top: 0.25em;
+  margin-right: 0.5em;
+}
+.need li input[type="checkbox"] {
+  position: relative;
+  top: -0.2em;
+  margin-right: 0.5em;
+}
+.need ul {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+.need textarea {
+  width: 99%;
+  min-height: 15em;
+}
+ul.venues {
+  list-style: none;
+}
+ul.venues h3 {
+  display: inline;
+}
+ul.venues li {
+  margin-bottom: 1em;
+}

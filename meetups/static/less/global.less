@@ -1,0 +1,97 @@
+@import 'bootstrap/mixins';
+
+body {
+    padding: 0;
+}
+
+label {
+    cursor: pointer;
+}
+
+div.hero-unit img {
+    float: left;
+    margin-right: 10px;
+}
+
+.btn-group.group-main {
+    text-align: center;
+
+    .btn {
+        .border-radius(10px);
+        color: #ddd;
+        display: inline-block;
+        float: none;
+        font: 250%/2.5em 'Kaushan Script', cursive;
+        margin: 0 2%;
+        padding: 1% 5%;
+
+        strong {
+            color: #fff;
+            font-weight: normal;
+        }
+    }
+}
+
+#messages {
+  margin-top: 1.4em;
+}
+
+.navbar-fixed-top {
+  position: static;
+}
+
+.need {
+  color: #aaa;
+  i[class*="icon"] { opacity: 0.5; }
+
+  .active, code {
+    color: black;
+  }
+
+  .show-grid {
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+    [class*="span"] {
+      background-color: #eee;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      border-radius: 3px;
+      padding: 0.25em 1em;
+    }
+
+    [class*="span"] h3 i[class*="icon"] {
+      margin-top: 0.25em;
+      margin-right: 0.5em;
+    }
+  }
+
+  li input[type="checkbox"] {
+    position: relative;
+    top: -0.2em;
+    margin-right: 0.5em;
+  }
+
+  ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  textarea {
+    width: 99%;
+    min-height: 15em;
+  }
+}
+
+ul.venues {
+    list-style: none;
+
+    h3 {
+        display: inline;
+    }
+
+    li {
+        margin-bottom: 1em;
+    }
+}

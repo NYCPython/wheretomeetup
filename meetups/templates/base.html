@@ -1,0 +1,65 @@
+{% extends 'bootstrap_responsive.html' %}
+
+{%- block title -%}
+    Where to Meetup
+{%- endblock -%}
+
+{%- block style %}
+    {{ super() }}
+    <link href="//fonts.googleapis.com/css?family=Trochut|Play|Kaushan+Script|Bree+Serif" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% endblock -%}
+
+{%- block body_content %}
+    {% block header %}
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a href="{{ url_for('index') }}" class="brand">Where to Meetup</a>
+                    <div class="nav-collapse">
+                        <ul class="nav">
+                            <li {%- if request.endpoint == 'need' %} class="active" {%- endif -%} ><a href="{{ url_for('need') }}">Need</a></li>
+                            <li {%- if request.endpoint == 'have' %} class="active" {%- endif -%} ><a href="{{ url_for('have') }}">Have</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group pull-right">
+                        <a href="{{ url_for('user_profile') }}" class="btn btn-success">
+                            <i class="icon-user icon-white"></i>
+                            {{ current_user.name }}
+                        </a>
+                        <a class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if current_user.is_anonymous() %}
+                                <li><a href="{{ url_for('login') }}">Log in</a></li>
+                            {% else %}
+                                <li><a href="{{ url_for('venues_for_user') }}">My spaces</a></li>
+                                <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="container" id="messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+{%- endblock %}

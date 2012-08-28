@@ -1,0 +1,25 @@
+{% from 'helpers/forms.html' import render_field -%}
+
+{% extends 'base.html' %}
+
+{%- block title -%}
+    My Profile - {{ super() }}
+{%- endblock -%}
+
+{%- block content %}
+    <div class="hero-unit">
+        <div class="container">
+            <h1>{{ user }}</h1>
+        </div>
+    </div>
+    <div class="container">
+        <form action="{{ url_for('user_profile') }}" method="post" class="well form-horizontal">
+            {{ render_field(form.email) }}
+            {{ render_field(form.phone) }}
+
+            <p><span class="help-block">This information is not required, but will be helpful to have later on.</span></p>
+
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+{%- endblock %}
