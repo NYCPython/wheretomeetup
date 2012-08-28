@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
 from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
-from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues
+from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
 from .models import User, Group, Venue, Event, login_manager
 
 
@@ -77,7 +77,8 @@ def need():
 def need_event(group_id):
     user = User(_id=int(session['member_id'])).load()
     group = Group(_id=group_id).load()
-    events = get_events({'group_id': group._id})
+    events = list(get_events({'group_id': group._id}))
+    events.sort(event_cmp)
     return render_template('need.html',
         user=user,
         group=group,

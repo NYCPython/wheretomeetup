@@ -61,3 +61,4 @@ from .models import login_manager
 login_manager.setup_app(app)
 
 from . import views
+from . import filters

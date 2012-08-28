@@ -53,6 +53,30 @@ def get_venues(query, sort=None):
     return _get_list(Venue, query, sort)
 
 
+def event_cmp(a, b):
+    """Sort :class:`~meetups.models.Event` instances so that:
+
+    * Events with with no space come before events with space
+    * Events with an assigned date come before events without
+    * Events with earlier dates come before events with later dates
+    """
+    avenue = getattr(a, 'venue', None)
+    bvenue = getattr(b, 'venue', None)
+    if avenue and not bvenue:
+        return 1
+    elif bvenue and not avenue:
+        return -1
+
+    adate = getattr(a, 'date', None)
+    bdate = getattr(b, 'date', None)
+    if adate and not bdate:
+        return -1
+    elif bdate and not adate:
+        return 1
+    else:
+        return cmp(adate, bdate)
+
+
 def _meetup_get(endpoint):
     """Make a GET request to the Meetup API and set common headers
     and options.
@@ -136,9 +160,9 @@ def sync_user(member_id, maximum_staleness=3600):
         for event in results:
             event_id = event.pop('id')
 
-            venue = event.pop('venue', None)
+            venue = event.get('venue', None)
             if venue:
-                venue_id = venue.pop('id')
+                venue_id = venue.get('id')
                 if venue_id not in seen_venues:
                     more_venues.append(venue_id)
 
