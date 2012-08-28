@@ -50,13 +50,15 @@ def login_meetup_return(oauth_response):
 def login_sync():
     user = sync_user(session['member_id'])
     login_user(user)
-    return redirect(url_for('user_profile'))
+    redirect_to = session.pop('login_redirect', url_for('user_profile'))
+    return redirect(redirect_to)
 
 
 @app.route('/logout/')
 def logout():
     session.pop('meetup_token', None)
     session.pop('meetup_member_id', None)
+    session.pop('login_redirect', None)
     logout_user()
     return redirect(url_for('.index'))
 
@@ -236,6 +238,5 @@ def get_meetup_token():
 
 @login_manager.unauthorized_handler
 def login_prompt():
-    # TODO: eventually, prompt the user so they are not surprised
-    # that we are redirecting them to Meetup to log in
+    session['login_redirect'] = request.path
     return redirect(url_for('login'))
