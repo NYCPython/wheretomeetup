@@ -29,7 +29,7 @@ class VenueEditForm(Form):
 
     # Optional questionnaire fields
     need_names = BooleanField('A list of names is required ahead of time.')
-    food = BooleanField('Food can be provided.')
+    food = BooleanField('Food can be provided by the host.')
     av = BooleanField('There is a screen and/or projector.')
     chairs = BooleanField('There is sufficient seating.')
     instructions = TextAreaField('Special instructions '
