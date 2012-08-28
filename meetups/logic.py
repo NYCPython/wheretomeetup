@@ -63,9 +63,9 @@ def event_cmp(a, b):
     avenue = getattr(a, 'venue', None)
     bvenue = getattr(b, 'venue', None)
     if avenue and not bvenue:
-        return -1
-    elif bvenue and not avenue:
         return 1
+    elif bvenue and not avenue:
+        return -1
 
     adate = getattr(a, 'date', None)
     bdate = getattr(b, 'date', None)
