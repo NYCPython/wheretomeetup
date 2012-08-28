@@ -11,6 +11,18 @@ from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups
 from .models import User, Group, Venue, Event, login_manager
 
 
+def skip_if_logged_in(func):
+    """Decorator for functions in the login flow that skips to
+    the destination if the user is already logged in.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if current_user.is_authenticated():
+            return redirect(url_for('user_profile'))
+        return func(*args, **kwargs)
+    return wrapper
+
+
 @app.route('/clear/')
 def clear():
     session.clear()
@@ -245,14 +257,3 @@ def get_meetup_token():
 def login_prompt():
     session['login_redirect'] = request.path
     return redirect(url_for('login'))
-
-def skip_if_logged_in(func):
-    """Decorator for functions in the login flow that skips to
-    the destination if the user is already logged in.
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if current_user.is_authenticated():
-            return redirect(url_for('user_profile'))
-        return func(*args, **kwargs)
-    return wrapper
