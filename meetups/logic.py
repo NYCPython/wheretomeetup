@@ -132,7 +132,7 @@ def sync_user(member_id, maximum_staleness=3600):
     while True:
         response = _meetup_get('/2/events/?%s' % urlencode(query))
         meta, results = response.data['meta'], response.data['results']
-        
+
         for event in results:
             event_id = event.pop('id')
 

@@ -4,7 +4,8 @@ from . import app, meetup, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import login_required, login_user, logout_user
 
-from .forms import VenueClaimForm, RequestForSpaceForm, UserProfileForm, RequestForSpaceInitial
+from .forms import (VenueEditForm, VenueClaimForm, RequestForSpaceForm,
+    UserProfileForm, RequestForSpaceInitial)
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues
 from .models import User, Group, Venue, Event, login_manager
 
@@ -198,6 +199,18 @@ def user_profile():
 @app.route('/space/<int:_id>/claim/', methods=('GET', 'POST'))
 @login_required
 def venue_claim(_id):
+    def get_contact_field(attr):
+        """Return an attribute for a venue's contact.
+
+        If the venue already has contact information associated with it,
+        the value stored in the document will be used. If not, the contact
+        information from the current user will be used instead.
+        """
+        value = getattr(user, attr, None)
+        if hasattr(venue, 'contact'):
+            value = venue.contact.get(attr, value)
+        return value
+
     venue = Venue(_id=_id).load()
 
     user = User(_id=int(session['member_id'])).load()
@@ -209,11 +222,32 @@ def venue_claim(_id):
     if not getattr(user, 'phone', None) and getattr(venue, 'phone', None):
         user.phone = venue.phone
 
-    form = VenueClaimForm(request.form, obj=user)
+    # There are different forms for editing and claiming a venue. Use the
+    # right one.
+    if venue.claimed:
+        form_class = VenueEditForm
+    else:
+        form_class = VenueClaimForm
+
+    # Check for current contact information linked to the venue. For any fields
+    # that don't have a value, use the values associated with the user doing
+    # the claiming.
+    venue.contact_name = get_contact_field('name')
+    venue.contact_email = get_contact_field('email')
+    venue.contact_phone = get_contact_field('phone')
+
+    form = form_class(request.form, obj=venue)
     if request.method == 'POST' and form.validate():
-        venue.claim(name=form.name.data, email=form.email.data,
-            phone=form.phone.data, user_id=user._id)
-        flash('Thank you for claiming %s' % venue.name, 'success')
+        venue.claim(contact_name=form.contact_name.data,
+            contact_email=form.contact_email.data,
+            contact_phone=form.contact_phone.data, user_id=user._id,
+            capacity=form.capacity.data, need_names=form.need_names.data,
+            food=form.food.data, av=form.av.data, chairs=form.chairs.data,
+            instructions=form.instructions.data)
+
+        flash('Thank you for %s %s' % (
+            'updating' if venue.claimed else 'claiming', venue.name), 'success')
+
         return redirect(url_for('venues_for_user'))
 
     return render_template('venue/claim.html', venue=venue, form=form)

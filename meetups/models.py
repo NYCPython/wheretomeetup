@@ -162,14 +162,35 @@ class Venue(Model):
     def __unicode__(self):
         return self.name
 
-    def claim(self, user_id, name, email, phone):
-        mongo.db[self.collection].update({'_id': self._id},
-            {'$set': {'claimed': True, 'user_id': user_id, 'contact': {
-                'name': name,
-                'email': email,
-                'phone': phone,
-            }}})
-        self.load()
+    def claim(self, user_id, **fields):
+        """Mark a venue as claimed, adding any additional information as well.
+
+        In order to claim the venue, the `user_id` must be provided. All other
+        fields will be passed through the keyword args (`**fields`). The name
+        of the keyword argument will be mapped to the keys of the document
+        with the following exceptions:
+
+         * `contact_name` will be stored as `contact.name`
+         * `contact_email` will be stored as `contact.email`
+         * `contact_phone` will be stored as `contact.phone`
+        """
+
+        self.claimed = True
+        self.user_id = user_id
+
+        contact = getattr(self, 'contact', {})
+        if 'contact_name' in fields:
+            contact['name'] = fields.pop('contact_name')
+        if 'contact_email' in fields:
+            contact['email'] = fields.pop('contact_email')
+        if 'contact_phone' in fields:
+            contact['phone'] = fields.pop('contact_phone')
+        self.contact = contact
+
+        for field in fields:
+            setattr(self, field, fields.get(field))
+
+        self.save()
 
 
 class Event(Model):

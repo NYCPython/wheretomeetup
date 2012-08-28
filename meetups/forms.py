@@ -1,22 +1,45 @@
 from collections import namedtuple
-from wtforms import Form, TextField, TextAreaField, BooleanField, HiddenField, validators
+from wtforms import (Form, validators, TextField, TextAreaField, BooleanField,
+    IntegerField, HiddenField)
 
 
 class UserProfileForm(Form):
+    """Edit contact information associated with a user."""
     _id = HiddenField()
 
     email = TextField('Email', [validators.Email()])
     phone = TextField('Phone')
 
 
-class VenueClaimForm(Form):
+class VenueEditForm(Form):
+    """Edit information associated with a venue.
+
+    The contact information and capacity are required. All of the fields that
+    make up the questionnaire portion of the form, however, are optional.
+    """
     _id = HiddenField()
 
-    name = TextField('Contact Name', [validators.Required()])
-    email = TextField('Contact Email',
+    contact_name = TextField('Contact Name', [validators.Required()])
+    contact_email = TextField('Contact Email',
         [validators.Required(), validators.Email()])
-    phone = TextField('Contact Phone', [validators.Required()])
+    contact_phone = TextField('Contact Phone', [validators.Required()])
 
+    capacity = IntegerField('Maximum Capacity',
+        [validators.NumberRange(min=0)])
+
+    # Optional questionnaire fields
+    need_names = BooleanField('A list of names is required ahead of time.')
+    food = BooleanField('Food can be provided.')
+    av = BooleanField('There is a screen and/or projector.')
+    chairs = BooleanField('There is sufficient seating.')
+    instructions = TextAreaField('Special instructions '
+        '(e.g., take a particular evelvator, use a specific door)')
+
+
+class VenueClaimForm(VenueEditForm):
+    """Extends the :class:`~meetup.forms.VenueEditForm` to add a confirmation
+    field.
+    """
     confirm = BooleanField('I hereby certify that this space belongs to me',
         [validators.Required()])
 
@@ -35,6 +58,7 @@ import re
 
 _RequestForSpaceInitial = namedtuple('RequestForSpaceInitial',
                                      ['name', 'email', 'phone', 'body'])
+
 
 def RequestForSpaceInitial(user, event, group):
     initial = {
