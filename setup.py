@@ -9,7 +9,7 @@ setup(
     version='0.9a1',
     author='NYCPython',
     author_email='info@wheretomeetup.com',
-    # license='BSD',
+    license='BSD',
     url='https://github.com/NYCPython/wheretomeetup',
     classifiers=[
         'Programming Language :: Python',
