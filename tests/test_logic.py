@@ -4,15 +4,13 @@ import meetups
 import mock
 
 from meetups import logic
+from tests.utils import PatchMixin
 
 
-class TestUserSync(TestCase):
+class TestUserSync(TestCase, PatchMixin):
     def setUp(self):
+        self.meetup = self.patch("meetups.logic.meetup")
         self.user = mock.NonCallableMock()
-
-        meetup_patch = mock.patch("meetups.logic.meetup")
-        self.meetup = meetup_patch.start()
-        self.addCleanup(meetup_patch.stop)
 
     def test_refreshes_if_needed(self):
         data = {"meta" : {"next" : ""}, "results" : []}
