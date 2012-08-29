@@ -77,9 +77,21 @@ class Model(object):
     def __init__(self, **kwargs):
         self._map_fields(kwargs)
 
+    @classmethod
+    def with_id(cls, id):
+        """
+        Retrieve and load the model object with the id ``id``.
+
+        """
+
+        model = cls(_id=id)
+        model.load()
+        return model
+
     def load(self):
         """Return ``True`` if the document was found, or ``False`` otherwise.
         """
+        #XXX This docstring lies.
         if not hasattr(self, '_id'):
             raise TypeError('Model subclasses must define an _id attribute')
         if self.collection is None:
