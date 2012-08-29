@@ -120,16 +120,14 @@ def meetup_get(endpoint, oauth=None):
     if oauth is None:
         oauth = meetup
 
-    next_uri = endpoint
-
-    while next_uri:
-        response = oauth.get(next_uri, headers={'Accept-Charset': 'utf-8'})
+    while endpoint:
+        response = oauth.get(endpoint, headers={'Accept-Charset': 'utf-8'})
         data = response.data
 
         for result in data["results"]:
             yield result
 
-        next_uri = data["meta"]["next"]
+        endpoint = data["meta"]["next"]
 
 
 def sync_user(user, maximum_staleness=3600):
