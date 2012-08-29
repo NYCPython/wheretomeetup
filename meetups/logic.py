@@ -109,13 +109,16 @@ def _meetup_get(endpoint):
     return meetup.get(endpoint, headers={'Accept-Charset': 'utf-8'})
 
 
-def meetup_get(endpoint, oauth):
+def meetup_get(endpoint, oauth=None):
     """
     GET all of the results from a Meetup.com API request.
 
     Lazily pages through each page and yields each result.
 
     """
+
+    if oauth is None:
+        oauth = meetup
 
     next_uri = endpoint
 
@@ -149,7 +152,7 @@ def sync_user(user, maximum_staleness=3600):
     organizer_of = []
 
     query = dict(member_id=user._id, fields='self', page=200, offset=0)
-    results = meetup_get('/2/groups/?%s' % urlencode(query), meetup)
+    results = meetup_get('/2/groups/?%s' % urlencode(query))
 
     for group in results:
         group_id = group.pop('id')

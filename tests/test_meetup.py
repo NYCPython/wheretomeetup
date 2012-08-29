@@ -15,6 +15,12 @@ class TestAPIWrapper(TestCase, PatchMixin):
     def setUp(self):
         self.uri = "test-uri"
 
+    def test_uses_global_oauth_when_none_is_provided(self):
+        meetup = self.patch("meetups.logic.meetup")
+        meetup.get.return_value.data = {"meta" : {"next" : ""}, "results" : []}
+        list(meetup_get(self.uri))
+        self.assertTrue(meetup.get.called)
+
     def test_sets_charset_header(self):
         oauth = mock.NonCallableMock()
         oauth.get.return_value.data = {"meta" : {"next" : ""}, "results" : []}
