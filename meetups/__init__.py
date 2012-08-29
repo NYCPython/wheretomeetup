@@ -55,6 +55,7 @@ def conf(key, default=''):
 
 app.secret_key = conf('FLASK_SECRET_KEY', 'Bn1dcC2QDWXgtj')
 
+app.config['BOOTSTRAP_GOOGLE_ANALYTICS_ACCOUNT'] = conf('BOOTSTRAP_GOOGLE_ANALYTICS_ACCOUNT')
 Bootstrap(app)
 
 oauth = OAuth()
