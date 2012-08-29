@@ -16,7 +16,7 @@ class TestLoginSync(TestCase):
         app.config["TESTING"] = True
         return app
 
-    def test_syncs_user(self):
+    def test_syncs_a_loaded_user(self):
         with self.app.test_client() as client:
             with client.session_transaction() as session:
                 session["member_id"] = 1
@@ -24,9 +24,10 @@ class TestLoginSync(TestCase):
             with mock.patch("meetups.views.User") as User:
                 with mock.patch("meetups.views.sync_user") as sync_user:
                     with mock.patch("meetups.views.login_user") as login_user:
+                        user = User.with_id(session["member_id"])
                         client.get("/login/sync/")
 
-            self.assertTrue(sync_user.called)
+            sync_user.assert_called_once_with(user)
 
     def test_logs_in_user(self):
         with self.app.test_client() as client:

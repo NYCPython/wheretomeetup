@@ -109,16 +109,17 @@ def _meetup_get(endpoint):
     return meetup.get(endpoint, headers={'Accept-Charset': 'utf-8'})
 
 
-def sync_user(member_id, maximum_staleness=3600):
-    """Synchronize a user between the Meetup API and MongoDB. Typically called
-    after a user login. In addition to creating or updating the `user` document,
-    also synchronizes groups the user is associated with, and sets the `organizer_of`
-    field in the `user` document with ``_id`` references that the user is an
-    oragnizer of.
+def sync_user(user, maximum_staleness=3600):
+    """Synchronize an (already loaded) user between the Meetup API and MongoDB.
+
+    Typically called after a user login. In addition to creating or updating
+    the `user` document, also synchronizes groups the user is associated with,
+    and sets the `organizer_of` field in the `user` document with ``_id``
+    references that the user is an oragnizer of.
 
     Returns the populated and saved :class:`~meetups.models.User` object.
     """
-    user = User(_id=member_id).load()
+
     user.refresh_if_needed(maximum_staleness)
     user.loc = (user.lon, user.lat)
     delattr(user, 'lon')
