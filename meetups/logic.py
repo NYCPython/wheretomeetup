@@ -149,23 +149,17 @@ def sync_user(user, maximum_staleness=3600):
     organizer_of = []
 
     query = dict(member_id=user._id, fields='self', page=200, offset=0)
-    while True:
-        response = _meetup_get('/2/groups/?%s' % urlencode(query))
-        meta, results = response.data['meta'], response.data['results']
+    results = meetup_get('/2/groups/?%s' % urlencode(query), meetup)
 
-        for group in results:
-            group_id = group.pop('id')
+    for group in results:
+        group_id = group.pop('id')
 
-            self = group.pop('self', {})
-            if self.get('role', None) in ORGANIZER_ROLES:
-                organizer_of.append(group_id)
-            member_of.append(group_id)
+        self = group.pop('self', {})
+        if self.get('role', None) in ORGANIZER_ROLES:
+            organizer_of.append(group_id)
+        member_of.append(group_id)
 
-            Group(_id=group_id, **group).save()
-
-        if not bool(meta['next']):
-            break
-        query['offset'] += 1
+        Group(_id=group_id, **group).save()
 
     user.member_of = member_of
     user.organizer_of = organizer_of
