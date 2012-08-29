@@ -109,6 +109,26 @@ def _meetup_get(endpoint):
     return meetup.get(endpoint, headers={'Accept-Charset': 'utf-8'})
 
 
+def meetup_get(endpoint, oauth):
+    """
+    GET all of the results from a Meetup.com API request.
+
+    Lazily pages through each page and yields each result.
+
+    """
+
+    next_uri = endpoint
+
+    while next_uri:
+        response = oauth.get(next_uri, headers={'Accept-Charset': 'utf-8'})
+        data = response.data
+
+        for result in data["results"]:
+            yield result
+
+        next_uri = data["meta"]["next"]
+
+
 def sync_user(user, maximum_staleness=3600):
     """Synchronize an (already loaded) user between the Meetup API and MongoDB.
 
