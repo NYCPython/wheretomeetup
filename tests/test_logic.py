@@ -48,6 +48,29 @@ class TestUserSync(TestCase, PatchMixin):
 
         self.assertEqual(self.user.member_of, member_of)
 
+    def test_updates_with_the_groups_on_next_pages(self):
+        groups = [{"id" : 1}, {"id" : 12}]
+        member_of = [group["id"] for group in groups]
+
+        def get(endpoint, *args, **kwargs):
+            if "groups" in endpoint:
+                if "offset=2" in endpoint:
+                    data = {"meta" : {"next" : ""}, "results" : [groups[1]]}
+                elif "offset=1" in endpoint:
+                    data = {"meta" : {"next" : "page_3"}, "results" : [groups[0]]}
+                else:
+                    data = {"meta" : {"next" : "page_2"}, "results" : []}
+            else:
+                data = {"meta" : {"next" : ""}, "results" : []}
+            return mock.MagicMock(data=data)
+
+        self.meetup.get.side_effect = get
+
+        with meetups.app.test_request_context():
+            logic.sync_user(self.user)
+
+        self.assertEqual(self.user.member_of, member_of)
+
     def test_saves_the_user(self):
         data = {"meta" : {"next" : ""}, "results" : []}
         self.meetup.get.return_value.data = data
