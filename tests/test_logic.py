@@ -28,6 +28,19 @@ class TestUserSync(TestCase, PatchMixin):
 
         self.assertEqual(self.user.loc, (lon, lat))
 
+    def test_creates_group_models(self):
+        groups = [{"id" : 1}, {"id" : 12}]
+        member_of = [group["id"] for group in groups]
+        self.patch("meetups.logic.meetup_get", return_value=iter(groups))
+        Group = self.patch("meetups.logic.Group")
+
+        with meetups.app.test_request_context():
+            logic.sync_user(self.user)
+
+        calls = [mock.call(_id=id) for id in member_of]
+        self.assertEqual(calls, Group.call_args_list)
+        self.assertEqual(len(Group.return_value.save.call_args_list), 2)
+
     def test_updates_the_groups(self):
         groups = [{"id" : 1}, {"id" : 12}]
         member_of = [group["id"] for group in groups]
