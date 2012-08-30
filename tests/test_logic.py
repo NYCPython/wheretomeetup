@@ -35,7 +35,7 @@ class TestUserSync(TestCase, PatchMixin):
         with meetups.app.test_request_context():
             logic.sync_user(self.user)
 
-        endpoint, = meetup_get.call_args[0]
+        endpoint, = meetup_get.call_args_list[0][0]
 
         sync_groups.assert_called_once_with(self.user, meetup_get.return_value)
         self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["groups"]))
@@ -45,6 +45,20 @@ class TestUserSync(TestCase, PatchMixin):
             logic.sync_user(self.user)
 
         self.assertTrue(self.user.save.called)
+
+    def test_syncs_the_venues(self):
+        create_venues = self.patch("meetups.logic.create_venues")
+        meetup_get = self.patch("meetups.logic.meetup_get")
+
+        with meetups.app.test_request_context():
+            logic.sync_user(self.user)
+
+        endpoint, = meetup_get.call_args_list[1][0]
+
+        self.assertEqual(
+            create_venues.call_args, mock.call(list(meetup_get.return_value))
+        )
+        self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["venues"]))
 
 
 class TestSyncGroups(TestCase, PatchMixin):
@@ -72,3 +86,20 @@ class TestSyncGroups(TestCase, PatchMixin):
     def test_updates_the_organizer_field(self):
         logic.sync_groups(self.user, self.groups)
         self.assertEqual(self.user.organizer_of, [2, 3])
+
+
+class TestCreatesVenues(TestCase, PatchMixin):
+    def test_creates_venue_models(self):
+        Venue = self.patch("meetups.logic.Venue")
+        venues = [
+            {"id" : 1, "lon" : 10, "lat" : 20},
+            {"id" : 2, "lon" : 20, "lat" : 10}
+        ]
+        calls = [
+            mock.call(_id=venue["id"], loc=(venue["lon"], venue["lat"]))
+            for venue in venues
+        ]
+
+        logic.create_venues(venues)
+        self.assertEqual(calls, Venue.call_args_list)
+        self.assertEqual(len(Venue.return_value.save.call_args_list), 2)

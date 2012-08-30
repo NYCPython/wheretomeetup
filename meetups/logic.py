@@ -29,7 +29,10 @@ from . import meetup
 from .models import *
 
 
-MEETUP_ENDPOINTS = {"groups" : "/2/groups/"}
+MEETUP_ENDPOINTS = {
+    "groups" : "/2/groups/",
+    "venues" : "/2/venues/",
+}
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
@@ -155,6 +158,18 @@ def sync_groups(user, groups):
     user.organizer_of = organizer_of
 
 
+def create_venues(venues):
+    """
+    Create and save Venue model objects from the given Meetup API venues.
+
+    """
+
+    for venue in venues:
+        venue["_id"] = venue.pop("id")
+        venue["loc"] = venue.pop("lon"), venue.pop("lat")
+        Venue(**venue).save()
+
+
 def sync_user(user, maximum_staleness=3600):
     """Synchronize an (already loaded) user between the Meetup API and MongoDB.
 
@@ -175,24 +190,11 @@ def sync_user(user, maximum_staleness=3600):
     sync_groups(user, groups)
     user.save()
 
-    seen_venues = set()
     group_ids = ','.join(str(x) for x in user.member_of)
-    query = dict(group_id=group_ids, fields='taglist', page=200, offset=0)
-    while True:
-        response = _meetup_get('/2/venues/?%s' % urlencode(query))
-        meta, results = response.data['meta'], response.data['results']
-
-        for venue in results:
-            venue_id = venue.pop('id')
-            seen_venues.add(venue_id)
-
-            location = venue.pop('lon'), venue.pop('lat')
-
-            Venue(_id=venue_id, loc=location, **venue).save()
-
-        if not bool(meta['next']):
-            break
-        query['offset'] += 1
+    query = urlencode(dict(group_id=group_ids, fields='taglist', page=200))
+    venues = list(meetup_get("%s?%s" % (MEETUP_ENDPOINTS["venues"], query)))
+    seen_venues = set(venue["id"] for venue in venues)
+    create_venues(venues)
 
     # Set defaults on any newly created venues
     mongo.db[Venue.collection].update({'claimed': {'$exists': False}},
