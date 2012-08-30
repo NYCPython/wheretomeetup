@@ -28,6 +28,8 @@ from urllib import urlencode
 from . import meetup
 from .models import *
 
+
+MEETUP_ENDPOINTS = {"groups" : "/2/groups/"}
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
@@ -130,6 +132,29 @@ def meetup_get(endpoint, oauth=None):
         endpoint = data["meta"]["next"]
 
 
+def sync_groups(user, groups):
+    """
+    Synchronize an (already loaded) user with some Meetup API groups.
+
+    """
+
+    member_of = []
+    organizer_of = []
+
+    for group in groups:
+        group_id = group["_id"] = group.pop("id")
+        self = group.pop("self", {})
+
+        member_of.append(group_id)
+        if self.get("role") in ORGANIZER_ROLES:
+            organizer_of.append(group_id)
+
+        Group(**group).save()
+
+    user.member_of = member_of
+    user.organizer_of = organizer_of
+
+
 def sync_user(user, maximum_staleness=3600):
     """Synchronize an (already loaded) user between the Meetup API and MongoDB.
 
@@ -143,31 +168,15 @@ def sync_user(user, maximum_staleness=3600):
 
     user.refresh_if_needed(maximum_staleness)
     user.loc = (user.lon, user.lat)
-    delattr(user, 'lon')
-    delattr(user, 'lat')
+    del user.lon, user.lat
 
-    member_of = []
-    organizer_of = []
-
-    query = dict(member_id=user._id, fields='self', page=200, offset=0)
-    results = meetup_get('/2/groups/?%s' % urlencode(query))
-
-    for group in results:
-        group_id = group.pop('id')
-
-        self = group.pop('self', {})
-        if self.get('role', None) in ORGANIZER_ROLES:
-            organizer_of.append(group_id)
-        member_of.append(group_id)
-
-        Group(_id=group_id, **group).save()
-
-    user.member_of = member_of
-    user.organizer_of = organizer_of
+    query = urlencode(dict(member_id=user._id, fields='self', page=200))
+    groups = meetup_get("%s?%s" % (MEETUP_ENDPOINTS["groups"], query))
+    sync_groups(user, groups)
     user.save()
 
     seen_venues = set()
-    group_ids = ','.join(str(x) for x in member_of)
+    group_ids = ','.join(str(x) for x in user.member_of)
     query = dict(group_id=group_ids, fields='taglist', page=200, offset=0)
     while True:
         response = _meetup_get('/2/venues/?%s' % urlencode(query))
