@@ -29,11 +29,6 @@ from . import meetup
 from .models import *
 
 
-MEETUP_ENDPOINTS = {
-    "events" : "/2/events/",
-    "groups" : "/2/groups/",
-    "venues" : "/2/venues/",
-}
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
