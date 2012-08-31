@@ -46,7 +46,7 @@ class TestUserSync(TestCase, PatchMixin):
 
         self.assertTrue(self.user.save.called)
 
-    def test_syncs_the_venues(self):
+    def test_creates_venues(self):
         create_venues = self.patch("meetups.logic.create_venues")
         meetup_get = self.patch("meetups.logic.meetup_get")
 
@@ -54,11 +54,21 @@ class TestUserSync(TestCase, PatchMixin):
             logic.sync_user(self.user)
 
         endpoint, = meetup_get.call_args_list[1][0]
-
-        self.assertEqual(
-            create_venues.call_args, mock.call(list(meetup_get.return_value))
-        )
         self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["venues"]))
+
+        create_venues.assert_called_once_with(meetup_get.return_value)
+
+    def test_creates_events(self):
+        create_events = self.patch("meetups.logic.create_events")
+        meetup_get = self.patch("meetups.logic.meetup_get")
+
+        with meetups.app.test_request_context():
+            logic.sync_user(self.user)
+
+        endpoint, = meetup_get.call_args_list[2][0]
+        self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["events"]))
+
+        create_events.assert_called_once_with(meetup_get.return_value)
 
 
 class TestSyncGroups(TestCase, PatchMixin):
@@ -103,3 +113,20 @@ class TestCreatesVenues(TestCase, PatchMixin):
         logic.create_venues(venues)
         self.assertEqual(calls, Venue.call_args_list)
         self.assertEqual(len(Venue.return_value.save.call_args_list), 2)
+
+
+class TestCreatesEvents(TestCase, PatchMixin):
+    def test_creates_event_models(self):
+        Event = self.patch("meetups.logic.Event")
+        events = [
+            {"id" : 1, "group" : {"id" : "3"}},
+            {"id" : 2, "group" : {"id" : "4"}}
+        ]
+        calls = [
+            mock.call(_id=event["id"], group_id=event["group"]["id"])
+            for event in events
+        ]
+
+        logic.create_events(events)
+        self.assertEqual(calls, Event.call_args_list)
+        self.assertEqual(len(Event.return_value.save.call_args_list), 2)
