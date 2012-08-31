@@ -7,47 +7,86 @@ from unittest import TestCase
 
 import mock
 
-from meetups.logic import meetup_get
+from meetups.meetup_api import Meetup
 from tests.utils import PatchMixin
 
 
-class TestAPIWrapper(TestCase, PatchMixin):
+class TestMeetupCore(TestCase, PatchMixin):
     def setUp(self):
-        self.uri = "test-uri"
+        self.oauth = mock.NonCallableMock()
+        self.meetup = Meetup(self.oauth)
 
-    def test_uses_global_oauth_when_none_is_provided(self):
-        meetup = self.patch("meetups.logic.meetup")
-        meetup.get.return_value.data = {"meta" : {"next" : ""}, "results" : []}
-        list(meetup_get(self.uri))
-        self.assertTrue(meetup.get.called)
+    def test_delegates_get_with_charset_to_oauth(self):
+        self.meetup.get(1, foo=2)
+        self.oauth.get.assert_called_once_with(
+            1, foo=2, headers={"Accept-Charset" : "utf-8"},
+        )
 
-    def test_sets_charset_header(self):
-        oauth = mock.NonCallableMock()
-        oauth.get.return_value.data = {"meta" : {"next" : ""}, "results" : []}
+    def test_get_results_returns_results_from_all_pages(self):
+        data_for_uris = {
+            "test-uri" : {
+                "meta" : {"next" : "page-2"}, "results" : [{"id" : 1}],
+            },
+            "page-2" : {
+                "meta" : {"next" : "page-3"},
+                "results" : [],
+            },
+            "page-3" : {
+                "meta" : {"next" : ""}, "results" : [{"id" : 2}, {"id" : 3}],
+            },
+        }
 
-        results = list(meetup_get(self.uri, oauth=oauth))
-        args, kwargs = oauth.get.call_args
-        self.assertEqual(kwargs["headers"]["Accept-Charset"], "utf-8")
+        self.oauth.get.side_effect = (
+            lambda e, *a, **kw : mock.Mock(data=data_for_uris[e])
+        )
 
-    def test_returns_combined_results_from_all_pages(self):
-        def get(endpoint, *args, **kwargs):
-            data = {
-                self.uri : {
-                    "meta" : {"next" : "page-2"}, "results" : [{"id" : 1}],
-                },
-                "page-2" : {
-                    "meta" : {"next" : "page-3"},
-                    "results" : [{"id" : 2}, {"id" : 3}],
-                },
-                "page-3" : {
-                    "meta" : {"next" : ""}, "results" : [],
-                },
-            }[endpoint]
+        results = list(self.meetup.get_results("test-uri"))
+        self.assertEqual(results, [{"id" : 1}, {"id" : 2}, {"id" : 3}])
 
-            return mock.Mock(data=data)
 
-        oauth = mock.NonCallableMock(**{"get.side_effect" : get})
+class TestMeetupWrapperMethods(TestCase, PatchMixin):
+    def setUp(self):
+        self.oauth = mock.NonCallableMock()
+        self.meetup = Meetup(self.oauth)
+        self.meetup.get_results = mock.Mock()
 
-        results = meetup_get(self.uri, oauth=oauth)
-        expected_results = [{"id" : 1}, {"id" : 2}, {"id" : 3}]
-        self.assertEqual(list(results), expected_results)
+    def test_groups(self):
+        groups = self.meetup.groups(
+            member_id=1, fields=["thing", "other"], page=8,
+        )
+
+        self.assertEqual(groups, self.meetup.get_results.return_value)
+        self.meetup.get_results.assert_called_once_with(
+            self.meetup.ENDPOINTS["groups"],
+            data=[("member_id", 1), ("fields", "thing,other"), ("page", 8)],
+        )
+
+    def test_venues(self):
+        venues = self.meetup.venues(
+            group_ids=[1, 2, 3], fields=["thing", "other"], page=8,
+        )
+
+        self.assertEqual(venues, self.meetup.get_results.return_value)
+        self.meetup.get_results.assert_called_once_with(
+            self.meetup.ENDPOINTS["venues"], data=[
+                ("group_id", "1,2,3"),
+                ("fields", "thing,other"),
+                ("page", 8),
+            ]
+        )
+
+    def test_events(self):
+        events = self.meetup.events(
+            group_ids=[1, 2, 3], status=["thing", "other"],
+            fields=["field", "another"], page=8,
+        )
+
+        self.assertEqual(events, self.meetup.get_results.return_value)
+        self.meetup.get_results.assert_called_once_with(
+            self.meetup.ENDPOINTS["events"], data=[
+                ("group_id", "1,2,3"),
+                ("status", "thing,other"),
+                ("fields", "field,another"),
+                ("page", 8)
+            ]
+        )

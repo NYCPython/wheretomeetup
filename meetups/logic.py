@@ -108,27 +108,6 @@ def event_cmp(a, b):
         return cmp(adate, bdate)
 
 
-def meetup_get(endpoint, oauth=None):
-    """
-    GET all of the results from a Meetup.com API request.
-
-    Lazily pages through each page and yields each result.
-
-    """
-
-    if oauth is None:
-        oauth = meetup
-
-    while endpoint:
-        response = oauth.get(endpoint, headers={'Accept-Charset': 'utf-8'})
-        data = response.data
-
-        for result in data["results"]:
-            yield result
-
-        endpoint = data["meta"]["next"]
-
-
 def sync_groups(user, groups):
     """
     Synchronize an (already loaded) user with some Meetup API groups.
@@ -190,14 +169,13 @@ def sync_user(user, maximum_staleness=3600):
     user.loc = (user.lon, user.lat)
     del user.lon, user.lat
 
-    query = urlencode(dict(member_id=user._id, fields='self', page=200))
-    groups = meetup_get("%s?%s" % (MEETUP_ENDPOINTS["groups"], query))
+    groups = meetup.groups(member_id=user._id, fields=["self"], page=200)
     sync_groups(user, groups)
     user.save()
 
-    group_ids = ','.join(str(x) for x in user.member_of)
-    query = urlencode(dict(group_id=group_ids, fields='taglist', page=200))
-    venues = meetup_get("%s?%s" % (MEETUP_ENDPOINTS["venues"], query))
+    venues = meetup.venues(
+        group_ids=user.member_of, fields=["taglist"], page=200,
+    )
     create_venues(venues)
 
     # Set defaults on any newly created venues
@@ -206,11 +184,10 @@ def sync_user(user, maximum_staleness=3600):
     mongo.db[Venue.collection].update({'deleted': {'$exists': False}},
         {'$set': {'deleted': False}}, multi=True)
 
-    all_upcoming = 'upcoming,proposed,suggested'
-    query = urlencode(dict(
-        group_id=group_ids, status=all_upcoming, fields='rsvp_limit', page=200
-    ))
-    events = meetup_get("%s?%s" % (MEETUP_ENDPOINTS["events"], query))
+    events = meetup.events(
+        group_ids=user.member_of, status=["upcoming", "proposed", "suggested"],
+        fields=["rsvp_limit"], page=200
+    )
     create_events(events)
 
     # TODO: Each event can have an additional venue that we might not have seen

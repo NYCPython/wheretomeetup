@@ -27,7 +27,7 @@ from functools import wraps
 
 import sendgrid
 
-from . import app, meetup, sendgrid_api
+from . import app, meetup_oauth, sendgrid_api
 from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import current_user, login_required, login_user, logout_user
 
@@ -71,13 +71,13 @@ def have():
 @skip_if_logged_in
 def login(service=''):
     if service:
-        return meetup.authorize(callback=url_for('login_meetup_return'))
+        return meetup_oauth.authorize(callback=url_for('login_meetup_return'))
     else:
         return render_template('redirect_to_meetup.html')
 
 
 @app.route('/login/meetup/return/', methods=('GET',))
-@meetup.authorized_handler
+@meetup_oauth.authorized_handler
 @skip_if_logged_in
 def login_meetup_return(oauth_response):
     session['meetup_token'] = (
@@ -308,7 +308,7 @@ def venues_for_user():
     return render_template('account/venues.html', venues=venues)
 
 
-@meetup.tokengetter
+@meetup_oauth.tokengetter
 def get_meetup_token():
     return session.get('meetup_token')
 

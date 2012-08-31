@@ -32,6 +32,8 @@ from flask.ext.oauth import OAuth
 from flask.ext.pymongo import PyMongo
 from flask.ext.heroku import Heroku
 
+from meetups.meetup_api import Meetup
+
 app = Flask(__name__)
 
 heroku = Heroku(app)
@@ -58,7 +60,7 @@ app.secret_key = conf('FLASK_SECRET_KEY', 'Bn1dcC2QDWXgtj')
 Bootstrap(app)
 
 oauth = OAuth()
-meetup = oauth.remote_app('meetup',
+meetup_oauth = oauth.remote_app('meetup',
     base_url='https://api.meetup.com/',
     request_token_url='https://api.meetup.com/oauth/request/',
     access_token_url='https://api.meetup.com/oauth/access/',
@@ -66,6 +68,7 @@ meetup = oauth.remote_app('meetup',
     consumer_key=conf('MEETUP_OAUTH_CONSUMER_KEY'),
     consumer_secret=conf('MEETUP_OAUTH_CONSUMER_SECRET'),
 )
+meetup = Meetup(meetup_oauth)
 
 if all(key in app.config for key in ('MONGODB_HOST','MONGODB_HOST','MONGODB_HOST','MONGODB_HOST','MONGODB_HOST')):
     # this looks like we're on Heroku, so translate

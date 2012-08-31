@@ -10,9 +10,6 @@ from tests.utils import PatchMixin
 class TestUserSync(TestCase, PatchMixin):
     def setUp(self):
         self.meetup = self.patch("meetups.logic.meetup")
-        self.meetup.get.return_value.data = {
-            "meta" : {"next" : ""}, "results" : []
-        }
         self.user = mock.NonCallableMagicMock()
 
     def test_refreshes_if_needed(self):
@@ -30,15 +27,17 @@ class TestUserSync(TestCase, PatchMixin):
 
     def test_syncs_the_groups(self):
         sync_groups = self.patch("meetups.logic.sync_groups")
-        meetup_get = self.patch("meetups.logic.meetup_get")
 
         with meetups.app.test_request_context():
             logic.sync_user(self.user)
 
-        endpoint, = meetup_get.call_args_list[0][0]
-
-        sync_groups.assert_called_once_with(self.user, meetup_get.return_value)
-        self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["groups"]))
+        sync_groups.assert_called_once_with(
+            self.user, self.meetup.groups.return_value
+        )
+        self.assertEqual(
+            self.meetup.groups.call_args[1]["member_id"],
+            self.user._id,
+        )
 
     def test_saves_the_user(self):
         with meetups.app.test_request_context():
@@ -46,29 +45,30 @@ class TestUserSync(TestCase, PatchMixin):
 
         self.assertTrue(self.user.save.called)
 
-    def test_creates_venues(self):
+    def test_creates_venues_with_taglists(self):
         create_venues = self.patch("meetups.logic.create_venues")
-        meetup_get = self.patch("meetups.logic.meetup_get")
 
         with meetups.app.test_request_context():
             logic.sync_user(self.user)
 
-        endpoint, = meetup_get.call_args_list[1][0]
-        self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["venues"]))
-
-        create_venues.assert_called_once_with(meetup_get.return_value)
+        create_venues.assert_called_once_with(self.meetup.venues.return_value)
+        self.assertEqual(
+            self.meetup.venues.call_args[1]["group_ids"],
+            self.user.member_of
+        )
+        self.assertIn("taglist", self.meetup.venues.call_args[1]["fields"])
 
     def test_creates_events(self):
         create_events = self.patch("meetups.logic.create_events")
-        meetup_get = self.patch("meetups.logic.meetup_get")
 
         with meetups.app.test_request_context():
             logic.sync_user(self.user)
 
-        endpoint, = meetup_get.call_args_list[2][0]
-        self.assertTrue(endpoint.startswith(logic.MEETUP_ENDPOINTS["events"]))
-
-        create_events.assert_called_once_with(meetup_get.return_value)
+        create_events.assert_called_once_with(self.meetup.events.return_value)
+        self.assertEqual(
+            self.meetup.events.call_args[1]["group_ids"],
+            self.user.member_of
+        )
 
 
 class TestSyncGroups(TestCase, PatchMixin):
