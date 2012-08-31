@@ -1,3 +1,23 @@
+class MeetupAPIError(Exception):
+    def __init__(self, error, *args, **kwargs):
+        super(MeetupAPIError, self).__init__(error, *args, **kwargs)
+        self.error = error
+
+    def __str__(self):
+        return self.error.get("problem", "")
+
+
+def validated(results):
+    """
+    Validate Meetup API results, converting error objects into exceptions.
+
+    """
+
+    if "problem" in results.data:
+        raise MeetupAPIError(results.data)
+    return results
+
+
 class Meetup(object):
 
     ENDPOINTS = {
@@ -12,7 +32,7 @@ class Meetup(object):
     def get(self, *args, **kwargs):
         headers = kwargs.setdefault("headers", {})
         headers.setdefault("Accept-Charset", "utf-8")
-        return self.oauth.get(*args, **kwargs)
+        return validated(self.oauth.get(*args, **kwargs))
 
     def get_results(self, endpoint, *args, **kwargs):
         """

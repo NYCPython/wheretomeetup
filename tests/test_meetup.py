@@ -7,13 +7,13 @@ from unittest import TestCase
 
 import mock
 
-from meetups.meetup_api import Meetup
+from meetups.meetup_api import Meetup, MeetupAPIError
 from tests.utils import PatchMixin
 
 
 class TestMeetupCore(TestCase, PatchMixin):
     def setUp(self):
-        self.oauth = mock.NonCallableMock()
+        self.oauth = mock.NonCallableMock(get=mock.MagicMock())
         self.meetup = Meetup(self.oauth)
 
     def test_delegates_get_with_charset_to_oauth(self):
@@ -42,6 +42,18 @@ class TestMeetupCore(TestCase, PatchMixin):
 
         results = list(self.meetup.get_results("test-uri"))
         self.assertEqual(results, [{"id" : 1}, {"id" : 2}, {"id" : 3}])
+
+    def test_get_can_fail(self):
+        data = self.oauth.get.return_value.data = {
+            "problem" : "Big boom!",
+            "details" : "The boom was big.",
+            "other" : "thing",
+        }
+        with self.assertRaises(MeetupAPIError) as e:
+            results = list(self.meetup.get(1))
+
+        self.assertEqual(str(e.exception), data["problem"])
+        self.assertIs(e.exception.error, data)
 
 
 class TestMeetupWrapperMethods(TestCase, PatchMixin):
