@@ -43,13 +43,15 @@
                 </fieldset>
             {%- endif -%}
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-success">
                 {%- if 'confirm' in form -%}
                     Claim
                 {%- else -%}
                     Update
                 {%- endif -%}
             </button>
+
+            <input type="submit" name="delete" class="btn" value=" {%- if 'confirm' in form -%} Claim {%- else -%} Update {%- endif %} &amp; Delete">
         </form>
     </div>
 {%- endblock %}

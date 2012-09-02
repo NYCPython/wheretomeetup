@@ -283,12 +283,22 @@ def venue_claim(_id):
 
     form = form_class(request.form, obj=venue)
     if request.method == 'POST' and form.validate():
-        venue.claim(contact_name=form.contact_name.data,
-            contact_email=form.contact_email.data,
-            contact_phone=form.contact_phone.data, user_id=user._id,
-            capacity=form.capacity.data, need_names=form.need_names.data,
-            food=form.food.data, av=form.av.data, chairs=form.chairs.data,
-            instructions=form.instructions.data)
+        claim = {
+            'contact_name': form.contact_name.data,
+            'contact_email': form.contact_email.data,
+            'contact_phone': form.contact_phone.data,
+            'user_id': user._id,
+            'capacity': form.capacity.data,
+            'need_names': form.need_names.data,
+            'food': form.food.data,
+            'av': form.av.data,
+            'chairs': form.chairs.data,
+            'instructions': form.instructions.data
+        }
+        if 'delete' in request.form:
+            claim['deleted'] = True
+
+        venue.claim(**claim)
 
         flash('Thank you for %s %s' % (
             'updating' if venue.claimed else 'claiming', venue.name), 'success')

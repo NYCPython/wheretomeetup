@@ -25,7 +25,8 @@
 
 from collections import namedtuple
 from wtforms import (Form, validators, TextField, TextAreaField, BooleanField,
-    IntegerField, HiddenField)
+    IntegerField, HiddenField, SubmitField)
+from .validators import OptionalIf
 
 
 class UserProfileForm(Form):
@@ -50,7 +51,8 @@ class VenueEditForm(Form):
     contact_phone = TextField('Contact Phone', [validators.Required()])
 
     capacity = IntegerField('Maximum Capacity',
-        [validators.NumberRange(min=0)])
+        [OptionalIf(field='delete'), validators.Required(),
+        validators.NumberRange(min=0)])
 
     # Optional questionnaire fields
     need_names = BooleanField('A list of names is required ahead of time.')
@@ -59,6 +61,8 @@ class VenueEditForm(Form):
     chairs = BooleanField('There is sufficient seating.')
     instructions = TextAreaField('Special instructions '
         '(e.g., take a particular evelvator, use a specific door)')
+
+    delete = SubmitField('Delete')
 
 
 class VenueClaimForm(VenueEditForm):
