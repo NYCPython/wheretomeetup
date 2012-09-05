@@ -297,6 +297,8 @@ def venue_claim(_id):
         }
         if 'delete' in request.form:
             claim['deleted'] = True
+        elif 'undelete' in request.form:
+            claim['deleted'] = False
 
         venue.claim(**claim)
 

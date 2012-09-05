@@ -63,6 +63,7 @@ class VenueEditForm(Form):
         '(e.g., take a particular evelvator, use a specific door)')
 
     delete = SubmitField('Delete')
+    undelete = SubmitField('Restore')
 
 
 class VenueClaimForm(VenueEditForm):

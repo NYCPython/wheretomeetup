@@ -51,7 +51,11 @@
                 {%- endif -%}
             </button>
 
-            <input type="submit" name="delete" class="btn" value=" {%- if 'confirm' in form -%} Claim {%- else -%} Update {%- endif %} &amp; Delete">
+            {% if venue.deleted -%}
+                <input type="submit" name="undelete" class="btn" value="Update &amp; {{ form.undelete.label.text }}">
+            {%- else -%}
+                <input type="submit" name="delete" class="btn" value=" {%- if 'confirm' in form -%} Claim {%- else -%} Update {%- endif %} &amp; {{ form.delete.label.text }}">
+            {%- endif -%}
         </form>
     </div>
 {%- endblock %}
