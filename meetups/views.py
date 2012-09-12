@@ -110,7 +110,7 @@ def logout():
 @login_required
 def need():
     user = User(_id=int(session['member_id'])).load()
-    groups = get_groups({'_id': {'$in': user.organizer_of}})
+    groups = get_groups({'_id': {'$in': user.organizer_of, 'deleted': False}})
     return render_template('need.html',
         user=user,
         groups=groups,
