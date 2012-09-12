@@ -27,6 +27,7 @@ from urllib import urlencode
 
 from . import meetup
 from .models import *
+from .pagination import Pagination
 
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
@@ -49,12 +50,15 @@ def get_users_venues(user_id):
     return _get_list(Venue, {'user_id': user_id}, 'name')
 
 
-def get_unclaimed_venues():
-    """Fetch a list of all venues that have yet to be claimed.
+def get_unclaimed_venues(page=None, limit=None):
+    """Fetch a list of :class:`~meetups.models.Venue` object that have yet to
+    be claimed.
 
-    Returns a list of :class:`~meetups.models.Venue` objects.
+    Returns a list of :class:`~meetups.models.Venue` objects wrapped in a
+    `~meetups.pagination.Pagination` object.
     """
-    return _get_list(Venue, {'claimed': False}, 'name')
+    return Pagination(_get_list(Venue, {'claimed': False}, 'name'),
+                      page=page, limit=limit)
 
 
 def get_groups(query, sort=None):
