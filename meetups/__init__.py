@@ -42,7 +42,7 @@ meetup = oauth.remote_app('meetup',
     consumer_secret=conf('MEETUP_OAUTH_CONSUMER_SECRET'),
 )
 
-if all(key in app.config for key in ('MONGODB_HOST','MONGODB_HOST','MONGODB_HOST','MONGODB_HOST','MONGODB_HOST')):
+if all(key in app.config for key in ('MONGODB_HOST','MONGODB_USER','MONGODB_PASSWORD','MONGODB_PORT','MONGODB_DB')):
     # this looks like we're on Heroku, so translate
     # Flask-Heroku's vars to what PyMongo expects
     app.config['MONGODB_DBNAME'] = app.config.pop('MONGODB_DB')
