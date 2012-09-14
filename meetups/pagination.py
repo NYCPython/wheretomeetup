@@ -45,7 +45,7 @@ class Pagination(object):
 
         self.limit = limit
 
-        if page < 1 or page > self.pages:
+        if not (1 <= page <= self.pages):
             raise InvalidPage('page must be between 1 and %d.' % self.pages)
 
         offset = (page - 1) * limit
