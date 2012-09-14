@@ -21,9 +21,14 @@
                     {% endfor %}
 
                     <address>
-                        {{ venue.address_1 }}
-                        {{ venue.address_2 }}
-                        {{ venue.city }}, {{ venue.state }}, {{ venue.zip }}
+                        {{ venue.address_1 }}<br>
+                        {%- if venue.address_2 -%}
+                            {{ venue.address_2 }}<br>
+                        {%- endif %}
+                        {% if venue.city and venue.state -%}
+                            {{ venue.city }}, {{ venue.state }}
+                        {%- endif %}
+                        {{ venue.zip }}
                     </address>
 
                     <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>

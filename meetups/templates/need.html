@@ -67,9 +67,34 @@
                 <form method="POST" action="{{ url_for('need_request', group_id=group._id, event_id=event._id) }}" class="well form-horizontal">
                 <ul>
                     {% for venue in all_venues %}
-                    <li><label for="{{ venue._id }}">
-                        <input type="checkbox" name="venue_id" value="{{ venue._id }}" id="{{ venue._id }}" /> {{ venue.name }}
-                    </label></li>
+                    <li>
+                        <label for="{{ venue._id }}">
+                            <input type="checkbox" name="venue_id" value="{{ venue._id }}" id="{{ venue._id }}"> {{ venue.name }}
+                        </label>
+
+                        <div class="questionnaire">
+                            {% if venue.chairs %}
+                                <i class="icon-arrow-down" title="Seating is provided"></i>
+                            {% endif %}
+
+                            {% if venue.food %}
+                                <i class="icon-glass" title="Willing to sponsor food and beverages"></i>
+                            {% endif %}
+
+                            {% if venue.need_names %}
+                                <i class="icon-th-list" title="A list of names is required in advance"></i>
+                            {% endif %}
+
+                            {% if venue.capacity %}
+                                <i class="icon-user" title="Can hold {{ venue.capacity }} people"></i> {{ venue.capacity }}
+                            {% endif %}
+
+                            {% if venue.instructions %}
+                                <br><i class="icon-info-sign" title="Special instructions"></i> Special instructions:
+                                <div class="instructions">{{ venue.instructions }}</div>
+                            {% endif %}
+                        </div>
+                    </li>
                     {% else %}
                     <li>
                         <div class="alert alert-error" style="margin-top:0.5em">
