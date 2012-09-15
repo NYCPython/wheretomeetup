@@ -30,11 +30,8 @@ from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.oauth import OAuth
 from flask.ext.pymongo import PyMongo
-from flask.ext.heroku import Heroku
 
 app = Flask(__name__)
-
-heroku = Heroku(app)
 
 try:
     app.config.from_pyfile('../secrets.cfg')
@@ -68,16 +65,8 @@ meetup = oauth.remote_app('meetup',
     consumer_secret=conf('MEETUP_OAUTH_CONSUMER_SECRET'),
 )
 
-if all(key in app.config for key in ('MONGODB_USER', 'MONGODB_PASSWORD',
-                                     'MONGODB_HOST', 'MONGODB_PORT',
-                                     'MONGODB_DB')):
-    # this looks like we're on Heroku, so translate
-    # Flask-Heroku's vars to what PyMongo expects
-    app.config['MONGODB_DBNAME'] = app.config.pop('MONGODB_DB')
-    app.config['MONGODB_USERNAME'] = app.config.pop('MONGODB_USER')
-    mongo = PyMongo(app, config_prefix='MONGODB')
-else:
-    mongo = PyMongo(app)
+app.config['MONGO_HOST'] = conf('MONGOHQ_URL', None)
+mongo = PyMongo(app)
 
 sendgrid_api = sendgrid.Sendgrid(
     username=conf('SENDGRID_USERNAME'),
