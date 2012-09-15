@@ -15,4 +15,3 @@ Flask-OAuth==0.11
 sendgrid-python==0.1.1
 pytz
 gunicorn==0.14.6
--e git+https://github.com/dcrosta/flask-heroku@patch-1#egg=Flask-Heroku
