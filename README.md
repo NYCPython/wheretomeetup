@@ -52,3 +52,16 @@ developers are working with though, you should instead use
 
 in the root of the repository, which will run the test suite on all of the
 supported environments.
+
+## Release Notes
+
+To perform a release to Heroku:
+
+1. Merge `develop` into the release branch (named after a version series,
+like `0.9.x`)
+2. If all tests pass on the release branch, merge the release branch to
+`master`
+3. Create a new version number as a commit on `master`, and create a tag
+with that version
+4. Deploy to Heroku with `git push heroku master`
+5. Push the release branch, tags, and `master` back to Github.
