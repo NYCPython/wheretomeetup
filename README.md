@@ -32,3 +32,36 @@ checkboxes. Add the username and password to `secrets.cfg` like:
 
 All geospatial data should be stored as an array formatted
 `[longitude, latitude]`. A 2d index should be created on the field.
+
+## Running the Test Suite
+
+If you're going to be contributing to WhereToMeetup, you're going to want to
+run its test suite as you work.
+
+If you just want to run the tests quickly, you can just run
+
+    YourFavoriteTestRunner tests
+
+on the `tests` package at the root of the repository. Before you send a pull
+request or if you want to exactly imitate the test setup that the other
+developers are working with though, you should instead use
+[tox](http://tox.readthedocs.org/en/latest/index.html) by running
+
+    pip install tox
+    tox
+
+in the root of the repository, which will run the test suite on all of the
+supported environments.
+
+## Release Notes
+
+To perform a release to Heroku:
+
+1. Merge `develop` into the release branch (named after a version series,
+like `0.9.x`)
+2. If all tests pass on the release branch, merge the release branch to
+`master`
+3. Create a new version number as a commit on `master`, and create a tag
+with that version
+4. Deploy to Heroku with `git push heroku master`
+5. Push the release branch, tags, and `master` back to Github.

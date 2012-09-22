@@ -1,0 +1,4 @@
+Flask-Testing
+mock
+nose
+coverage

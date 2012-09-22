@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 setup(
     name='WhereToMeetup',
     description='WhereToMeetup connects meetup organizers with hosts and sponsors.',
-    version='0.9a1',
+    version='1.0a1',
     author='NYCPython',
     author_email='info@wheretomeetup.com',
     license='BSD',
@@ -22,5 +22,6 @@ setup(
     install_requires=[],
     setup_requires=['nose'],
     tests_require=['coverage'],
+    py_modules=['distribute_setup'],
     packages=['meetups'],
 )
