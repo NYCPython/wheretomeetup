@@ -24,7 +24,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import os.path
 
+import bugsnag
 import sendgrid
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
@@ -73,6 +75,17 @@ sendgrid_api = sendgrid.Sendgrid(
     password=conf('SENDGRID_PASSWORD'),
     secure=True,
 )
+
+if conf('BUGSNAG_API_KEY'):
+    bugsnag.configure(
+        api_key=conf('BUGSNAG_API_KEY'),
+        release_stage=conf('BUGSNAG_RELEASE_STAGE', 'development'),
+        notify_release_stages=['production'],
+        auto_notify=False,
+        use_ssl=True,
+        project_root=os.path.dirname(os.path.dirname(__file__)),
+        # project_version=
+    )
 
 from .models import login_manager
 login_manager.setup_app(app)

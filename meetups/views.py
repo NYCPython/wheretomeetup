@@ -25,6 +25,7 @@
 
 from functools import wraps
 
+import bugsnag
 import sendgrid
 
 from . import app, meetup, sendgrid_api
@@ -321,7 +322,11 @@ def login_prompt():
 
 @app.errorhandler(500)
 def internal_server_error(error):
-    # TODO: sentry/airbrake/email/etc
+    bugsnag.notify(
+        error,
+        context=request.path,
+        user=session.get('member_id', '<anon>'),
+    )
     return render_template('errors/500.html')
 
 
