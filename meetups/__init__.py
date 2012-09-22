@@ -65,7 +65,7 @@ meetup = oauth.remote_app('meetup',
     consumer_secret=conf('MEETUP_OAUTH_CONSUMER_SECRET'),
 )
 
-app.config['MONGO_URI'] = conf('MONGOHQ_URL', None)
+app.config['MONGO_URI'] = conf('MONGOHQ_URL', 'mongodb://localhost/meetups')
 mongo = PyMongo(app)
 
 sendgrid_api = sendgrid.Sendgrid(
