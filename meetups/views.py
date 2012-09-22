@@ -25,6 +25,7 @@
 
 from functools import wraps
 
+import bugsnag
 import sendgrid
 
 from . import app, meetup, sendgrid_api
@@ -91,7 +92,8 @@ def login_meetup_return(oauth_response):
 @app.route('/login/sync/', methods=('GET',))
 @skip_if_logged_in
 def login_sync():
-    user = sync_user(session['member_id'])
+    user = User.with_id(session["member_id"])
+    sync_user(user)
     login_user(user)
     redirect_to = session.pop('login_redirect', url_for('user_profile'))
     return redirect(redirect_to)
@@ -316,3 +318,18 @@ def get_meetup_token():
 def login_prompt():
     session['login_redirect'] = request.path
     return redirect(url_for('login'))
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    bugsnag.notify(
+        error,
+        context=request.path,
+        user=session.get('member_id', '<anon>'),
+    )
+    return render_template('errors/500.html')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('errors/404.html')

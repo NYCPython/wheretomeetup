@@ -1,0 +1,25 @@
+{% from 'helpers/forms.html' import render_field -%}
+
+{% extends 'base.html' %}
+
+{%- block title -%}
+    Oops! - {{ super() }}
+{%- endblock -%}
+
+{%- block content %}
+    <div class="hero-unit">
+        <div class="container">
+            <div class="span6 offset2">
+                <h1>Uh, oh :'(</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span6 offset3 container">
+          <h3>We had an error processing your request, but fear not, we've been
+          notified and will fix the problem soon.</h3>
+        </div>
+    </div>
+
+{%- endblock %}

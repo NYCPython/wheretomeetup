@@ -22,5 +22,6 @@ setup(
     install_requires=[],
     setup_requires=['nose'],
     tests_require=['coverage'],
+    py_modules=['distribute_setup'],
     packages=['meetups'],
 )
