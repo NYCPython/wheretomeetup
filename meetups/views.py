@@ -29,13 +29,15 @@ import bugsnag
 import sendgrid
 
 from . import app, meetup, sendgrid_api
-from flask import render_template, redirect, url_for, request, session, flash
+from flask import render_template, redirect, url_for, request, session, flash, abort
 from flask.ext.login import current_user, login_required, login_user, logout_user
 
 from .forms import (VenueEditForm, VenueClaimForm, RequestForSpaceForm,
     UserProfileForm, RequestForSpaceInitial)
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
 from .models import User, Group, Venue, Event, login_manager
+
+PER_PAGE = 20
 
 
 def skip_if_logged_in(func):
@@ -61,9 +63,12 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/have/')
-def have():
-    venues = get_unclaimed_venues()
+@app.route('/have/', defaults={'page': 1})
+@app.route('/have/page/<int:page>/')
+def have(page):
+    venues = get_unclaimed_venues(page=page, limit=PER_PAGE)
+    if not venues and page != 1:
+        abort(404)
     return render_template('have.html', venues=venues)
 
 

@@ -1,0 +1,21 @@
+{%- macro render_pager(pager, view_name) -%}
+    <ul class="pager">
+        {%- if pager.has_previous_page -%}
+            {%- set classes = ['previous'] -%}
+            {%- set page = pager.page - 1 -%}
+        {%- else -%}
+            {%- set classes = ['previous', 'disabled'] -%}
+            {%- set page = pager.page -%}
+        {%- endif -%}
+        <li class="{{ classes|join(' ') }}"><a href="{{ url_for(view_name, page=page) }}">&larr; Previous</a></li>
+
+        {%- if pager.has_next_page -%}
+            {%- set classes = ['next'] -%}
+            {%- set page = pager.page + 1 -%}
+        {%- else -%}
+            {%- set classes = ['next', 'disabled'] -%}
+            {%- set page = pager.page -%}
+        {%- endif -%}
+        <li class="{{ classes|join(' ') }}"><a href="{{ url_for(view_name, page=page) }}">Next &rarr;</a></li>
+    </ul>
+{%- endmacro -%}
