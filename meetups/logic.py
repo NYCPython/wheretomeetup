@@ -23,6 +23,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import re
 from urllib import urlencode
 
 from . import meetup
@@ -49,12 +50,22 @@ def get_users_venues(user_id):
     return _get_list(Venue, {'user_id': user_id}, 'name')
 
 
-def get_unclaimed_venues():
+def get_unclaimed_venues(name=None, location=None):
     """Fetch a list of all venues that have yet to be claimed.
+
+    Providing a value for `name` will result in a regular expression
+    query being performed.
+
+    Values for `location` should be in the form of `[longitude, latitude]`.
 
     Returns a list of :class:`~meetups.models.Venue` objects.
     """
-    return _get_list(Venue, {'claimed': False}, 'name')
+    query = {'claimed': False}
+    if name is not None:
+        query['name'] = {'$regex': re.compile(name, re.IGNORECASE)}
+    if location is not None:
+        query['loc'] = {'$near': location}
+    return _get_list(Venue, query, 'name')
 
 
 def get_groups(query, sort=None):
