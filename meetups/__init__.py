@@ -33,6 +33,8 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.oauth import OAuth
 from flask.ext.pymongo import PyMongo
 
+from meetups.meetup_api import Meetup
+
 app = Flask(__name__)
 
 try:
@@ -58,7 +60,7 @@ app.config['BOOTSTRAP_GOOGLE_ANALYTICS_ACCOUNT'] = conf('BOOTSTRAP_GOOGLE_ANALYT
 Bootstrap(app)
 
 oauth = OAuth()
-meetup = oauth.remote_app('meetup',
+meetup_oauth = oauth.remote_app('meetup',
     base_url='https://api.meetup.com/',
     request_token_url='https://api.meetup.com/oauth/request/',
     access_token_url='https://api.meetup.com/oauth/access/',
@@ -66,6 +68,7 @@ meetup = oauth.remote_app('meetup',
     consumer_key=conf('MEETUP_OAUTH_CONSUMER_KEY'),
     consumer_secret=conf('MEETUP_OAUTH_CONSUMER_SECRET'),
 )
+meetup = Meetup(meetup_oauth)
 
 app.config['MONGO_URI'] = conf('MONGOHQ_URL', 'mongodb://localhost/meetups')
 mongo = PyMongo(app)
