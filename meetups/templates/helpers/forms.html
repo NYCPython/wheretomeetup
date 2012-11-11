@@ -6,7 +6,9 @@
                 {{ field.label.text }}
             </label>
         {% else %}
-            {{ field.label }}
+            {% if field.type != 'HiddenField' %}
+                {{ field.label }}
+            {% endif %}
             {{ field(**kwargs)|safe }}
         {% endif %}
         {% if field.errors %}
