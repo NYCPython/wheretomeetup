@@ -28,6 +28,7 @@ from urllib import urlencode
 from . import meetup
 from .models import *
 
+
 ORGANIZER_ROLES = set(['Organizer', 'Co-Organizer'])
 
 
@@ -102,11 +103,51 @@ def event_cmp(a, b):
         return cmp(adate, bdate)
 
 
-def _meetup_get(endpoint):
-    """Make a GET request to the Meetup API and set common headers
-    and options.
+def sync_groups(user, groups):
     """
-    return meetup.get(endpoint, headers={'Accept-Charset': 'utf-8'})
+    Synchronize an (already loaded) user with some Meetup API groups.
+
+    """
+
+    member_of = []
+    organizer_of = []
+
+    for group in groups:
+        group_id = group["_id"] = group.pop("id")
+        self = group.pop("self", {})
+
+        member_of.append(group_id)
+        if self.get("role") in ORGANIZER_ROLES:
+            organizer_of.append(group_id)
+
+        Group(**group).save()
+
+    user.member_of = member_of
+    user.organizer_of = organizer_of
+
+
+def create_venues(venues):
+    """
+    Create and save Venue model objects from the given Meetup API venues.
+
+    """
+
+    for venue in venues:
+        venue["_id"] = venue.pop("id")
+        venue["loc"] = venue.pop("lon"), venue.pop("lat")
+        Venue(**venue).save()
+
+
+def create_events(events):
+    """
+    Create and save Event model objects from the given Meetup API events.
+
+    """
+
+    for event in events:
+        event["_id"] = event.pop("id")
+        event["group_id"] = event.pop("group")["id"]
+        Event(**event).save()
 
 
 def sync_user(user, maximum_staleness=3600):
@@ -117,58 +158,20 @@ def sync_user(user, maximum_staleness=3600):
     and sets the `organizer_of` field in the `user` document with ``_id``
     references that the user is an oragnizer of.
 
-    Returns the populated and saved :class:`~meetups.models.User` object.
     """
 
     user.refresh_if_needed(maximum_staleness)
     user.loc = (user.lon, user.lat)
-    delattr(user, 'lon')
-    delattr(user, 'lat')
+    del user.lon, user.lat
 
-    member_of = []
-    organizer_of = []
-
-    query = dict(member_id=user._id, fields='self', page=200, offset=0)
-    while True:
-        response = _meetup_get('/2/groups/?%s' % urlencode(query))
-        meta, results = response.data['meta'], response.data['results']
-
-        for group in results:
-            group_id = group.pop('id')
-
-            self = group.pop('self', {})
-            if self.get('role', None) in ORGANIZER_ROLES:
-                organizer_of.append(group_id)
-            member_of.append(group_id)
-
-            Group(_id=group_id, **group).save()
-
-        if not bool(meta['next']):
-            break
-        query['offset'] += 1
-
-    user.member_of = member_of
-    user.organizer_of = organizer_of
+    groups = meetup.groups(member_id=user._id, fields=["self"], page=200)
+    sync_groups(user, groups)
     user.save()
 
-    seen_venues = set()
-    group_ids = ','.join(str(x) for x in member_of)
-    query = dict(group_id=group_ids, fields='taglist', page=200, offset=0)
-    while True:
-        response = _meetup_get('/2/venues/?%s' % urlencode(query))
-        meta, results = response.data['meta'], response.data['results']
-
-        for venue in results:
-            venue_id = venue.pop('id')
-            seen_venues.add(venue_id)
-
-            location = venue.pop('lon'), venue.pop('lat')
-
-            Venue(_id=venue_id, loc=location, **venue).save()
-
-        if not bool(meta['next']):
-            break
-        query['offset'] += 1
+    venues = meetup.venues(
+        group_ids=user.member_of, fields=["taglist"], page=200,
+    )
+    create_venues(venues)
 
     # Set defaults on any newly created venues
     mongo.db[Venue.collection].update({'claimed': {'$exists': False}},
@@ -176,34 +179,11 @@ def sync_user(user, maximum_staleness=3600):
     mongo.db[Venue.collection].update({'deleted': {'$exists': False}},
         {'$set': {'deleted': False}}, multi=True)
 
-    more_venues = []
-    all_upcoming = 'upcoming,proposed,suggested'
-    query = dict(group_id=group_ids, status=all_upcoming, fields='rsvp_limit', page=200, offset=0)
-    while True:
-        response = _meetup_get('/2/events/?%s' % urlencode(query))
-        meta, results = response.data['meta'], response.data['results']
+    events = meetup.events(
+        group_ids=user.member_of, status=["upcoming", "proposed", "suggested"],
+        fields=["rsvp_limit"], page=200
+    )
+    create_events(events)
 
-        for event in results:
-            event_id = event.pop('id')
-
-            venue = event.get('venue', None)
-            if venue:
-                venue_id = venue.get('id')
-                if venue_id not in seen_venues:
-                    more_venues.append(venue_id)
-                    seen_venues.add(venue_id)
-
-            group = event.pop('group')
-            event['group_id'] = group.pop('id')
-
-            Event(_id=event_id, **event).save()
-
-        if not bool(meta['next']):
-            break
-        query['offset'] += 1
-
-    # TODO:
-    # for venue in more_venues:
-    #     get_venue()
-
-    return user
+    # TODO: Each event can have an additional venue that we might not have seen
+    #       before. Pull it out, fetch it, and save it.
