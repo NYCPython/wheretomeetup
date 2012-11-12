@@ -33,7 +33,7 @@ from flask import render_template, redirect, url_for, request, session, flash
 from flask.ext.login import current_user, login_required, login_user, logout_user
 
 from .forms import (VenueEditForm, VenueClaimForm, RequestForSpaceForm,
-    UserProfileForm, RequestForSpaceInitial)
+    UserProfileForm, RequestForSpaceInitial, VenueSearchForm)
 from .logic import sync_user, get_unclaimed_venues, get_users_venues, get_groups, get_events, get_venues, event_cmp
 from .models import User, Group, Venue, Event, login_manager
 
@@ -61,10 +61,20 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/have/')
+@app.route('/have/', methods=('GET', 'POST'))
 def have():
-    venues = get_unclaimed_venues()
-    return render_template('have.html', venues=venues)
+    form = VenueSearchForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+        name = form.name.data or None
+        location = None
+        if form.longitude.data and form.latitude.data:
+            location = [float(form.longitude.data), float(form.latitude.data)]
+        venues = get_unclaimed_venues(name=name, location=location)
+    else:
+        venues = ()
+
+    return render_template('have.html', form=form, venues=venues)
 
 
 @app.route('/login/')
