@@ -69,6 +69,28 @@ class VenueClaimForm(VenueEditForm):
         [validators.Required()])
 
 
+class VenueSearchForm(Form):
+    """Search for a venue."""
+    name = TextField('Venue Name', [validators.Required()])
+
+    use_current_location = BooleanField('Find venues near me')
+
+    longitude = HiddenField()
+    latitude = HiddenField()
+
+    # TODO: Move this to a custom OptionalIfNot validator after OptionalIf
+    # has been merged.
+    def validate_use_current_location(form, field):
+        """Validate that the geolocation has been included for a form
+        specifying to use the current location.
+        """
+        if field.data:
+            if not (form.longitude.data or form.latitude.data):
+                raise validators.ValidationError('It appears you have blocked '
+                                                 'this site from accessing '
+                                                 'your location.')
+
+
 class RequestForSpaceForm(Form):
     name = TextField('Your Name', [validators.Required()])
     email = TextField('Your Email',
@@ -116,4 +138,3 @@ Thanks,
     }
 
     return _RequestForSpaceInitial(**initial)
-
