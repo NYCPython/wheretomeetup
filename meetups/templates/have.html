@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% from 'helpers/forms.html' import render_field -%}
+
 {%- block title -%}
     I have a space - {{ super() }}
 {%- endblock -%}
@@ -12,28 +14,81 @@
     </div>
 
     <div class="container">
-        <ul class="venues">
-            {% for venue in venues %}
-                <li>
-                    <h3>{{ venue }}</h3>
-                    {% for tag in venue.taglist %}
-                        <span class="label">{{ tag }}</span>
-                    {% endfor %}
+        <form action="{{ url_for('have') }}" method="post" class="well">
+            {{ render_field(form.name) }}
+            {{ render_field(form.use_current_location) }}
 
-                    <address>
-                        {{ venue.address_1 }}<br>
-                        {%- if venue.address_2 -%}
-                            {{ venue.address_2 }}<br>
-                        {%- endif %}
-                        {% if venue.city and venue.state -%}
-                            {{ venue.city }}, {{ venue.state }}
-                        {%- endif %}
-                        {{ venue.zip }}
-                    </address>
+            {{ render_field(form.longitude) }}
+            {{ render_field(form.latitude) }}
 
-                    <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
-                </li>
-            {% endfor %}
-        </ul>
+            <input type="submit" value="Search" class="btn btn-primary">
+
+            <script>
+                window.onload = function() {
+                    var $form = $('div.container form.well');
+
+                    var addGeoLocation = function(e) {
+                        if ($('input[name=use_current_location]', $form).is(':checked')) {
+                            e.preventDefault();
+
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                $('input[name=longitude]', $form).val(position.coords.longitude);
+                                $('input[name=latitude]', $form).val(position.coords.latitude);
+
+
+                                $form.unbind('submit', addGeoLocation).submit();
+                            }, function() {
+                                $form.unbind('submit', addGeoLocation).submit();
+                            });
+                        } else {
+                            $('input[name=longitude]', $form).val('');
+                            $('input[name=latitude]', $form).val('');
+                        }
+                    }
+
+                    if (!navigator.geolocation) {
+                        $('input[name=use_current_location]', $form).hide();
+                    } else {
+                        $form.bind('submit', addGeoLocation)
+                    }
+                }
+            </script>
+        </form>
+    </div>
+
+    <div class="container">
+        {% if venues %}
+            <em>
+                Showing results matching &quot;{{ form.name.data }}&quot;
+                {%- if form.longitude.data and form.latitude.data %}
+                    near you
+                {%- endif -%}
+                .
+            </em>
+
+            <ul class="venues">
+                {% for venue in venues %}
+                    <li>
+                        <h3>{{ venue }}</h3>
+                        {% for tag in venue.taglist %}
+                            <span class="label">{{ tag }}</span>
+                        {% endfor %}
+
+                        <address>
+                            {{ venue.address_1 }}<br>
+                            {%- if venue.address_2 -%}
+                                {{ venue.address_2 }}<br>
+                            {%- endif %}
+                            {% if venue.city and venue.state -%}
+                                {{ venue.city }}, {{ venue.state }}
+                            {%- endif %}
+                            {{ venue.zip }}
+                        </address>
+
+                        <a href="{{ url_for('venue_claim', _id=venue._id) }}" class="btn btn-primary btn-mini">Claim this space</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 {%- endblock %}

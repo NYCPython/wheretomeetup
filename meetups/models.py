@@ -161,6 +161,7 @@ class User(Model, UserMixin):
         'id': '_id'
     }
     collection = 'users'
+    name = ''
 
     def __unicode__(self):
         return self.name
@@ -195,6 +196,7 @@ class Venue(Model):
     field_mapping = {'id': '_id'}
     collection = 'venues'
     dont_save_fields = ['distance']
+    name = ''
 
     def __unicode__(self):
         return self.name
@@ -234,3 +236,4 @@ class Event(Model):
     field_mapping = {'id': '_id'}
     collection = 'events'
     dont_save_fields = []
+    name = ''
