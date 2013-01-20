@@ -9,16 +9,45 @@ More information coming soon.
 
 ## Setup Notes
 
+### What you will need:
+
+* MongoDB
+* The code
+* A Meetup.com application
+* SendGrid account (if working on anything that sends email)
+
+#### MongoDB
+
+[Download and install MongoDB](http://docs.mongodb.org/manual/installation/).
+After it has been installed,
+[run the server](http://docs.mongodb.org/manual/reference/mongod/).
+
+
+#### The code
+
+The repository can be cloned locally with
+`git clone https://github.com/NYCPython/wheretomeetup.git`. After the
+code has been downloaded, `cd` into the `wheretomeetup` folder,
+create/activate a virtual environment, and run:
+
+    pip install -r requirements.txt
+
+[Read more about virtual environments.](http://www.virtualenv.org/en/latest/)
+
+#### Meetup.com application
+
 You will need to [create an application at
 Meetup.com](http://www.meetup.com/meetup_api/oauth_consumers/create/). Be sure not to
 enter a Redirect URI, as this will cause Meetup to send OAuth 2.0 responses
-(WhereToMeetup use OAuth 1.0a).
+(WhereToMeetup uses OAuth 1.0a).
 
 Create a file at the root of this repository named `secrets.cfg`, with the
 contents:
 
     MEETUP_OAUTH_CONSUMER_KEY = 'your-meetup-application-key'
     MEETUP_OAUTH_CONSUMER_SECRET = 'your-meetup-application-secret'
+
+#### SendGrid account
 
 To send email, you will need a [free SendGrid
 account](http://sendgrid.com/user/signup). Once you have signed up and your
@@ -29,6 +58,12 @@ checkboxes. Add the username and password to `secrets.cfg` like:
 
     SENDGRID_USERNAME = 'your-new-username'
     SENDGRID_PASSWORD = 'your-new-password'
+
+## Running the application
+
+To start the development server, run:
+
+    python runserver.py
 
 ## Geospatial data
 
