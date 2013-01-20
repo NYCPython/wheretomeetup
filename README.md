@@ -2,7 +2,9 @@
 
 # Meetups
 
-A site for connecting groups and locations. More information coming soon.
+A [site](http://www.wheretomeetup.com) for connecting groups and locations.
+
+More information coming soon.
 
 
 ## Setup Notes
