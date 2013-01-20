@@ -23,7 +23,7 @@ After it has been installed,
 
 #### The code
 
-After cloning the repository with
+The repository can be cloned locally with
 `git clone https://github.com/NYCPython/wheretomeetup.git`. After the
 code has been downloaded, `cd` into the `wheretomeetup` folder,
 create/activate a virtual environment, and run:
