@@ -37,3 +37,5 @@ pip-log.txt
 .mr.developer.cfg
 
 secrets.cfg
+
+.vagrant
