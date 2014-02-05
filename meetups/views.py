@@ -97,7 +97,7 @@ def logout():
 @login_required
 def need():
     user = User(_id=int(session['member_id'])).load()
-    groups = get_groups({'_id': {'$in': user.organizer_of}})
+    groups = get_groups({'_id': {'$in': user.organizer_of, 'deleted': False}})
     return render_template('need.html',
         user=user,
         groups=groups,
@@ -270,12 +270,24 @@ def venue_claim(_id):
 
     form = form_class(request.form, obj=venue)
     if request.method == 'POST' and form.validate():
-        venue.claim(contact_name=form.contact_name.data,
-            contact_email=form.contact_email.data,
-            contact_phone=form.contact_phone.data, user_id=user._id,
-            capacity=form.capacity.data, need_names=form.need_names.data,
-            food=form.food.data, av=form.av.data, chairs=form.chairs.data,
-            instructions=form.instructions.data)
+        claim = {
+            'contact_name': form.contact_name.data,
+            'contact_email': form.contact_email.data,
+            'contact_phone': form.contact_phone.data,
+            'user_id': user._id,
+            'capacity': form.capacity.data,
+            'need_names': form.need_names.data,
+            'food': form.food.data,
+            'av': form.av.data,
+            'chairs': form.chairs.data,
+            'instructions': form.instructions.data
+        }
+        if 'delete' in request.form:
+            claim['deleted'] = True
+        elif 'undelete' in request.form:
+            claim['deleted'] = False
+
+        venue.claim(**claim)
 
         flash('Thank you for %s %s' % (
             'updating' if venue.claimed else 'claiming', venue.name), 'success')

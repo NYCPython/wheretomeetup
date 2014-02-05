@@ -15,6 +15,9 @@
             {% for venue in venues %}
                 <li>
                     <h3>{{ venue }}</h3>
+                    {% if venue.deleted %}
+                        <span class="label label-important">deleted</span>
+                    {% endif %}
                     {% for tag in venue.taglist %}
                         <span class="label">{{ tag }}</span>
                     {% endfor %}
